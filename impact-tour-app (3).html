@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cognite Impact Tour – Mumbai 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+  :root {
+    --bg:        #1a1d2e;
+    --bg2:       #222540;
+    --surface:   #252842;
+    --surface2:  #2d3050;
+    --border:    rgba(255,255,255,0.08);
+    --border2:   rgba(255,255,255,0.14);
+    --blue:      #4f6fff;
+    --blue-dark: #3b55e6;
+    --blue-glow: rgba(79,111,255,0.18);
+    --orange:    #ff6b2b;
+    --orange-glow: rgba(255,107,43,0.15);
+    --text:      #eef0f8;
+    --text2:     #9aa3c2;
+    --text3:     #6b748f;
+    --white:     #ffffff;
+    --success:   #27c486;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,111,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,111,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(26,29,46,0.95);
+    backdrop-filter: blur(16px);
+    z-index: 100;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cognite-mark { display:flex; align-items:center; }
+
+  .nav-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--white);
+  }
+  .nav-name sub {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 0.04em;
+    margin-left: 6px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .toggle-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .toggle-btn.active {
+    background: var(--blue);
+    color: white;
+    box-shadow: 0 2px 8px rgba(79,111,255,0.4);
+  }
+  .toggle-btn:hover:not(.active) { color: var(--text); }
+
+  .status-pill {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(155,160,190,0.1);
+    border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .status-pill.live {
+    background: rgba(39,196,134,0.1);
+    border-color: rgba(39,196,134,0.3);
+    color: var(--success);
+  }
+
+  /* ─── VIEWS ─── */
+  .view { display: none; position: relative; z-index: 1; }
+  .view.active { display: block; }
+
+  /* ════════════════════════════════
+     PARTICIPANT VIEW
+  ════════════════════════════════ */
+  .p-wrap {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 44px 24px 72px;
+  }
+
+  .event-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    background: var(--blue-glow);
+    border: 1px solid rgba(79,111,255,0.25);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .event-chip::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .p-title {
+    font-size: clamp(1.7rem, 5vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .p-title .highlight {
+    background: linear-gradient(135deg, var(--blue) 0%, #8ba4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .p-sub {
+    font-size: 0.92rem;
+    color: var(--text2);
+    line-height: 1.65;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  .rule-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--text2);
+    margin-bottom: 28px;
+  }
+  .rule-strip strong { color: var(--text); font-weight: 600; }
+
+  .problems-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .p-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .p-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--blue);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .p-card:hover { border-color: var(--border2); background: var(--surface2); }
+  .p-card.selected {
+    border-color: var(--blue);
+    background: rgba(79,111,255,0.08);
+  }
+  .p-card.selected::before { opacity: 1; }
+  .p-card.disabled:not(.selected) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .p-check {
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border2);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 0.65rem;
+    color: transparent;
+  }
+  .p-card.selected .p-check {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .p-emoji { font-size: 1.2rem; flex-shrink: 0; }
+  .p-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .counter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-size: 0.78rem;
+    color: var(--text2);
+  }
+  .counter-dots { display: flex; gap: 5px; }
+  .counter-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    transition: all 0.2s;
+  }
+  .counter-dot.filled { background: var(--blue); border-color: var(--blue); }
+
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .submit-btn:hover:not(:disabled) {
+    background: #3b55e6;
+    box-shadow: 0 6px 20px rgba(79,111,255,0.4);
+    transform: translateY(-1px);
+  }
+  .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
+  .submit-btn .arrow { transition: transform 0.2s; }
+  .submit-btn:hover:not(:disabled) .arrow { transform: translateX(3px); }
+
+  /* success */
+  .success-view {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .success-view.show { display: block; }
+  .s-icon {
+    width: 72px; height: 72px;
+    background: rgba(39,196,134,0.12);
+    border: 1.5px solid rgba(39,196,134,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 24px;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
+  .s-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .s-sub { font-size: 0.88rem; color: var(--text2); line-height: 1.7; }
+
+  /* ════════════════════════════════
+     HOST / DISPLAY VIEW
+  ════════════════════════════════ */
+  .h-wrap {
+    padding: 36px 48px 48px;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .h-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .h-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .h-eyebrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--blue) 0%, transparent 100%);
+    max-width: 60px;
+  }
+
+  .h-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    color: var(--white);
+  }
+  .h-title .hl {
+    background: linear-gradient(135deg, var(--blue) 0%, #8ba4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .live-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--success);
+    background: rgba(39,196,134,0.08);
+    border: 1px solid rgba(39,196,134,0.25);
+    padding: 8px 16px;
+    border-radius: 100px;
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    background: var(--success);
+    border-radius: 50%;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.35;transform:scale(0.65)} }
+
+  /* stats */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue), transparent);
+  }
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-num.blue { color: var(--blue); }
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  /* word cloud */
+  .cloud-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+  }
+  .cloud-card::before {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(79,111,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cloud-empty {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
+    color: var(--text3);
+    font-size: 0.85rem;
+  }
+  .cloud-empty-icon { font-size: 2.2rem; opacity: 0.35; }
+
+  .cloud-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 14px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .word-chip {
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 6px 14px;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    text-align: center;
+    animation: chipIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes chipIn {
+    0%  { opacity:0; transform:scale(0.6) translateY(12px); }
+    100%{ opacity:1; transform:scale(1)   translateY(0); }
+  }
+
+  /* bars */
+  .bars-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+  }
+  .bars-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 18px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .bar-row:last-child { margin-bottom: 0; }
+  .bar-emoji { font-size: 1rem; flex-shrink: 0; width: 22px; text-align: center; }
+  .bar-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text2);
+    width: 190px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #8ba4ff);
+    border-radius: 100px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bar-n {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--blue);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* bottom row */
+  .h-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .qr-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .qr-box {
+    width: 60px; height: 60px;
+    background: white;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.52rem; font-weight: 700;
+    color: #333; text-align: center;
+    flex-shrink: 0; line-height: 1.4;
+  }
+  .qr-label { font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .qr-url { font-size: 0.7rem; color: var(--blue); font-family: monospace; }
+
+  .host-controls { display: flex; gap: 8px; }
+  .h-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.01em;
+  }
+  .h-btn:hover { border-color: var(--border2); color: var(--text); }
+  .h-btn.danger:hover { border-color: rgba(255,80,80,0.4); color: #ff6060; }
+
+  /* ════════════════════════════════
+     FIREBASE MODAL
+  ════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,12,24,0.88);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.hidden { display: none; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  }
+  .modal-logo {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 24px;
+  }
+  .modal-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 0.83rem;
+    color: var(--text2);
+    line-height: 1.65;
+    margin-bottom: 22px;
+  }
+  .m-field { margin-bottom: 12px; }
+  .m-field label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 5px;
+  }
+  .m-field input {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 12px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.18s;
+  }
+  .m-field input:focus { border-color: var(--blue); }
+  .m-actions { display: flex; gap: 10px; margin-top: 18px; }
+  .m-primary {
+    flex: 1; padding: 12px;
+    background: var(--blue); color: white;
+    border: none; border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .m-primary:hover { background: var(--blue-dark); }
+  .m-skip {
+    padding: 12px 18px;
+    background: transparent; color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.83rem;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .m-skip:hover { color: var(--text); border-color: var(--border2); }
+
+  @media (max-width: 640px) {
+    .h-wrap { padding: 20px 16px 40px; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .stats-row .stat-card:last-child { grid-column: span 2; }
+    .bar-name { width: 110px; }
+    .h-top { flex-direction: column; gap: 14px; }
+    .h-bottom { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Firebase Config Modal ─── -->
+<div class="modal-overlay" id="fbModal">
+  <div class="modal-box">
+    <div class="modal-logo">
+      <svg width="110" height="28" viewBox="0 0 110 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- vertical bars of hash -->
+        <rect x="4"  y="6"  width="3.5" height="16" rx="1.75" fill="#4f6fff"/>
+        <rect x="11" y="2"  width="3.5" height="24" rx="1.75" fill="#4f6fff"/>
+        <rect x="18" y="4"  width="3.5" height="20" rx="1.75" fill="#4f6fff"/>
+        <!-- horizontal bars of hash -->
+        <rect x="2"  y="9"  width="22" height="3" rx="1.5" fill="#4f6fff"/>
+        <rect x="2"  y="16" width="22" height="3" rx="1.5" fill="#4f6fff"/>
+        <!-- swoosh arc -->
+        <path d="M1 20 Q12 28 24 20" stroke="#4f6fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <!-- wordmark -->
+        <text x="32" y="20" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="white" letter-spacing="-0.3">COGNITE</text>
+      </svg>
+    </div>
+    <div class="modal-title">Connect Firebase</div>
+    <div class="modal-sub">Paste your Firebase project config to enable live real-time voting. Skip to preview in demo mode.</div>
+    <div class="m-field">
+      <label>API Key</label>
+      <input type="text" id="fb-apiKey" placeholder="AIzaSy...">
+    </div>
+    <div class="m-field">
+      <label>Auth Domain</label>
+      <input type="text" id="fb-authDomain" placeholder="yourapp.firebaseapp.com">
+    </div>
+    <div class="m-field">
+      <label>Database URL</label>
+      <input type="text" id="fb-dbUrl" placeholder="https://yourapp-default-rtdb.firebaseio.com">
+    </div>
+    <div class="m-field">
+      <label>Project ID</label>
+      <input type="text" id="fb-projectId" placeholder="your-project-id">
+    </div>
+    <div class="m-actions">
+      <button class="m-primary" onclick="initFirebase()">Connect Live</button>
+      <button class="m-skip" onclick="skipFirebase()">Demo Mode</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Nav ─── -->
+<nav class="nav">
+  <div class="nav-brand">
+    <svg width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4"  y="6"  width="3.5" height="16" rx="1.75" fill="#4f6fff"/>
+      <rect x="11" y="2"  width="3.5" height="24" rx="1.75" fill="#4f6fff"/>
+      <rect x="18" y="4"  width="3.5" height="20" rx="1.75" fill="#4f6fff"/>
+      <rect x="2"  y="9"  width="22" height="3" rx="1.5" fill="#4f6fff"/>
+      <rect x="2"  y="16" width="22" height="3" rx="1.5" fill="#4f6fff"/>
+      <path d="M1 20 Q12 28 24 20" stroke="#4f6fff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+      <text x="32" y="20" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="white" letter-spacing="-0.3">COGNITE</text>
+    </svg>
+    <div class="nav-name" style="border-left:1px solid rgba(255,255,255,0.12);padding-left:12px;margin-left:4px">
+      <span style="font-size:0.7rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2)">Impact Tour · Mumbai</span>
+    </div>
+  </div>
+  <div class="view-toggle">
+    <button class="toggle-btn active" onclick="switchView('participant', this)">Participant</button>
+    <button class="toggle-btn" onclick="switchView('host', this)">Host Display</button>
+  </div>
+  <div class="status-pill" id="conn-status">Demo</div>
+</nav>
+
+<!-- ══════════════════════════════════
+     PARTICIPANT VIEW
+══════════════════════════════════ -->
+<div class="view active" id="view-participant">
+  <div class="p-wrap">
+
+    <div id="vote-form">
+      <div class="event-chip">Mumbai Impact Tour · 2026</div>
+      <h1 class="p-title">What's your<br><span class="highlight">biggest challenge</span><br>right now?</h1>
+      <p class="p-sub">Select up to 3 challenges your organization faces. Anonymous — shapes today's conversation.</p>
+
+      <div class="rule-strip">
+        <span>📌</span>
+        <span>Choose up to <strong>3 challenges</strong> that resonate most</span>
+      </div>
+
+      <div class="problems-list" id="problems-list">
+        <!-- JS renders -->
+      </div>
+
+      <div class="counter-row">
+        <span id="counter-text" style="color:var(--text3)">Nothing selected yet</span>
+        <div class="counter-dots">
+          <div class="counter-dot" id="dot-1"></div>
+          <div class="counter-dot" id="dot-2"></div>
+          <div class="counter-dot" id="dot-3"></div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" disabled onclick="submitVote()">
+        Submit my challenges <span class="arrow">→</span>
+      </button>
+    </div>
+
+    <div class="success-view" id="success-view">
+      <div class="s-icon">✓</div>
+      <div class="s-title">You're on the board!</div>
+      <p class="s-sub">Your responses are live on the display screen.<br>See what challenges your peers are also facing.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     HOST / DISPLAY VIEW
+══════════════════════════════════ -->
+<div class="view" id="view-host">
+  <div class="h-wrap">
+
+    <div class="h-top">
+      <div>
+        <div class="h-eyebrow">Cognite Impact Tour · Mumbai 2026</div>
+        <h1 class="h-title">What's keeping<br>leaders up at <span class="hl">night?</span></h1>
+      </div>
+      <div class="live-chip"><div class="live-dot"></div> Live</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num blue" id="stat-resp">0</div>
+        <div class="stat-label">Responses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-top" style="font-size:1.6rem">—</div>
+        <div class="stat-label">Top Challenge</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num blue" id="stat-total">0</div>
+        <div class="stat-label">Votes Cast</div>
+      </div>
+    </div>
+
+    <div class="cloud-card">
+      <div class="cloud-empty" id="cloud-empty">
+        <div class="cloud-empty-icon">☁️</div>
+        <span>Waiting for audience responses…</span>
+      </div>
+      <div class="cloud-grid" id="word-cloud" style="display:none"></div>
+    </div>
+
+    <div class="bars-card" id="bars-card">
+      <div class="bars-title">Breakdown</div>
+      <div id="bars-list"></div>
+    </div>
+
+    <div class="h-bottom">
+      <div class="qr-row">
+        <div class="qr-box">QR<br>CODE</div>
+        <div>
+          <div class="qr-label">Scan to participate</div>
+          <div class="qr-url">Deploy to GitHub Pages → replace this with QR</div>
+        </div>
+      </div>
+      <div class="host-controls">
+        <button class="h-btn" onclick="toggleBars()">Toggle Breakdown</button>
+        <button class="h-btn danger" onclick="resetAll()">Reset Votes</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── PROBLEMS (replace with Pavan's list) ───
+const PROBLEMS = [
+  { id: 'data-silos',   label: 'Data locked in silos across systems',       emoji: '🔒' },
+  { id: 'manual-ops',   label: 'Too much manual work in operations',         emoji: '⚙️' },
+  { id: 'realtime',     label: 'No real-time visibility into assets',        emoji: '📡' },
+  { id: 'talent',       label: 'Shortage of data science / AI talent',       emoji: '🧑‍💻' },
+  { id: 'decisions',    label: 'Slow decisions due to poor data quality',    emoji: '⏱️' },
+  { id: 'integration',  label: 'Integration complexity across tools',        emoji: '🔗' },
+  { id: 'compliance',   label: 'Regulatory & compliance pressure',           emoji: '📋' },
+  { id: 'cost',         label: 'Reducing operational costs at scale',        emoji: '💸' },
+];
+
+const CHIP_COLORS = [
+  { bg:'rgba(79,111,255,0.14)',  color:'#8ba4ff' },
+  { bg:'rgba(255,107,43,0.12)',  color:'#ff8c5a' },
+  { bg:'rgba(39,196,134,0.10)', color:'#27c486' },
+  { bg:'rgba(180,100,255,0.10)',color:'#c47aff' },
+  { bg:'rgba(255,200,0,0.10)',  color:'#ffc845' },
+  { bg:'rgba(0,200,220,0.10)',  color:'#00c8dc' },
+  { bg:'rgba(255,80,130,0.10)', color:'#ff6090' },
+  { bg:'rgba(130,255,180,0.08)',color:'#7affa8' },
+];
+
+let selected = new Set();
+let db = null;
+let demoVotes = {};
+let barsVisible = true;
+
+// ─── FIREBASE ───
+function initFirebase() {
+  const cfg = {
+    apiKey:      document.getElementById('fb-apiKey').value.trim(),
+    authDomain:  document.getElementById('fb-authDomain').value.trim(),
+    databaseURL: document.getElementById('fb-dbUrl').value.trim(),
+    projectId:   document.getElementById('fb-projectId').value.trim(),
+  };
+  if (!cfg.apiKey || !cfg.databaseURL) { alert('Please fill in API Key and Database URL'); return; }
+  try {
+    const app = firebase.initializeApp(cfg);
+    db = firebase.database(app);
+    const pill = document.getElementById('conn-status');
+    pill.textContent = '🟢 Live';
+    pill.classList.add('live');
+    document.getElementById('fbModal').classList.add('hidden');
+    listenFirebase();
+  } catch(e) { alert('Firebase error: ' + e.message); }
+}
+
+function skipFirebase() {
+  document.getElementById('fbModal').classList.add('hidden');
+  PROBLEMS.forEach(p => { demoVotes[p.id] = Math.floor(Math.random() * 6); });
+  demoVotes['data-silos'] = 15; demoVotes['manual-ops'] = 11; demoVotes['realtime'] = 9;
+  renderAll(demoVotes, 8);
+}
+
+function listenFirebase() {
+  db.ref('votes').on('value', snap => {
+    const v = snap.val() || {};
+    db.ref('responses').once('value', s2 => {
+      renderAll(v, s2.val() || 0);
+    });
+  });
+}
+
+// ─── PARTICIPANT ───
+function renderProblems() {
+  document.getElementById('problems-list').innerHTML = PROBLEMS.map(p => `
+    <div class="p-card" id="pc-${p.id}" onclick="toggle('${p.id}')">
+      <div class="p-check" id="ck-${p.id}">✓</div>
+      <span class="p-emoji">${p.emoji}</span>
+      <span class="p-label">${p.label}</span>
+    </div>
+  `).join('');
+}
+
+function toggle(id) {
+  if (selected.has(id)) {
+    selected.delete(id);
+    document.getElementById('pc-' + id).classList.remove('selected');
+  } else {
+    if (selected.size >= 3) return;
+    selected.add(id);
+    document.getElementById('pc-' + id).classList.add('selected');
+  }
+  // update disabled state
+  PROBLEMS.forEach(p => {
+    const card = document.getElementById('pc-' + p.id);
+    if (!selected.has(p.id) && selected.size >= 3) {
+      card.classList.add('disabled');
+    } else {
+      card.classList.remove('disabled');
+    }
+  });
+  // dots
+  let i = 0;
+  selected.forEach(() => {
+    i++;
+    document.getElementById('dot-' + i)?.classList.add('filled');
+  });
+  for (let j = i + 1; j <= 3; j++) {
+    document.getElementById('dot-' + j)?.classList.remove('filled');
+  }
+  const t = document.getElementById('counter-text');
+  t.textContent = selected.size === 0 ? 'Nothing selected yet' : `${selected.size} of 3 selected`;
+  t.style.color = selected.size > 0 ? 'var(--blue)' : 'var(--text3)';
+  document.getElementById('submit-btn').disabled = selected.size === 0;
+}
+
+async function submitVote() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  if (db) {
+    const upd = { responses: firebase.database.ServerValue.increment(1) };
+    selected.forEach(id => { upd[`votes/${id}`] = firebase.database.ServerValue.increment(1); });
+    await db.ref().update(upd);
+  } else {
+    selected.forEach(id => { demoVotes[id] = (demoVotes[id] || 0) + 1; });
+    renderAll(demoVotes, (parseInt(document.getElementById('stat-resp').textContent) || 0) + 1);
+  }
+
+  document.getElementById('vote-form').style.display = 'none';
+  document.getElementById('success-view').classList.add('show');
+}
+
+// ─── HOST DISPLAY ───
+function renderAll(votes, responses) {
+  document.getElementById('stat-resp').textContent = responses || 0;
+
+  const total = Object.values(votes).reduce((a, b) => a + b, 0);
+  document.getElementById('stat-total').textContent = total;
+
+  const sorted = PROBLEMS.map(p => ({ ...p, count: votes[p.id] || 0 })).sort((a, b) => b.count - a.count);
+  const top = sorted[0];
+  document.getElementById('stat-top').textContent = (top && top.count > 0) ? top.emoji + ' ' + top.label.split(' ').slice(0,3).join(' ') + '…' : '—';
+  document.getElementById('stat-top').style.fontSize = (top && top.count > 0) ? '0.85rem' : '1.6rem';
+
+  renderCloud(sorted);
+  renderBars(sorted);
+}
+
+function renderCloud(sorted) {
+  const cloud = document.getElementById('word-cloud');
+  const empty = document.getElementById('cloud-empty');
+  const hasData = sorted.some(p => p.count > 0);
+
+  if (!hasData) { empty.style.display = 'flex'; cloud.style.display = 'none'; return; }
+  empty.style.display = 'none'; cloud.style.display = 'flex';
+
+  const max = sorted[0].count || 1;
+  cloud.innerHTML = sorted.filter(p => p.count > 0).map((p, i) => {
+    const ratio = p.count / max;
+    const size = (0.72 + ratio * 1.4).toFixed(2);
+    const c = CHIP_COLORS[i % CHIP_COLORS.length];
+    return `<div class="word-chip" style="font-size:${size}rem;background:${c.bg};color:${c.color};border:1px solid ${c.color}22"
+      title="${p.count} votes">${p.emoji} ${p.label}</div>`;
+  }).join('');
+}
+
+function renderBars(sorted) {
+  const max = sorted[0]?.count || 1;
+  document.getElementById('bars-list').innerHTML = sorted.map(p => `
+    <div class="bar-row">
+      <div class="bar-emoji">${p.emoji}</div>
+      <div class="bar-name">${p.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${p.count > 0 ? (p.count/max*100).toFixed(1) : 0}%"></div>
+      </div>
+      <div class="bar-n">${p.count}</div>
+    </div>
+  `).join('');
+}
+
+function toggleBars() {
+  barsVisible = !barsVisible;
+  document.getElementById('bars-card').style.display = barsVisible ? 'block' : 'none';
+}
+
+function resetAll() {
+  if (!confirm('Reset all votes? This cannot be undone.')) return;
+  if (db) {
+    db.ref('votes').remove();
+    db.ref('responses').remove();
+  } else {
+    PROBLEMS.forEach(p => { demoVotes[p.id] = 0; });
+    renderAll(demoVotes, 0);
+  }
+}
+
+// ─── VIEW SWITCH ───
+function switchView(v, btn) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.toggle-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── INIT ───
+renderProblems();
+
+// Auto-connect Firebase once page + scripts are fully loaded
+window.addEventListener('load', function() {
+  const cfg = {
+    apiKey:      "AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k",
+    authDomain:  "cognite-impact-tour.firebaseapp.com",
+    databaseURL: "https://cognite-impact-tour-default-rtdb.firebaseio.com",
+    projectId:   "cognite-impact-tour",
+  };
+  try {
+    const app = firebase.initializeApp(cfg);
+    db = firebase.database(app);
+    const pill = document.getElementById('conn-status');
+    pill.textContent = '🟢 Live';
+    pill.classList.add('live');
+    document.getElementById('fbModal').classList.add('hidden');
+    listenFirebase();
+  } catch(e) {
+    console.error('Firebase auto-connect failed:', e);
+    document.getElementById('fbModal').classList.add('hidden');
+  }
+});
+</script>
+</body>
+</html>
