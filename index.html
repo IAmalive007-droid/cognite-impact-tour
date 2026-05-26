@@ -32,29 +32,29 @@
     background-image:linear-gradient(rgba(79,111,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(79,111,255,0.03) 1px,transparent 1px);
     background-size:40px 40px;
   }
-
+ 
   /* ── VIEWS ── */
   .view { display:none; position:relative; z-index:1; min-height:100vh; }
   .view.active { display:flex; flex-direction:column; }
-
+ 
   /* ════════════════════════════
      HOME / LANDING
   ════════════════════════════ */
   #view-home {
     align-items:center; justify-content:center; text-align:center; padding:40px 24px;
   }
-
+ 
   .home-glow {
     position:absolute; top:50%; left:50%; transform:translate(-50%,-60%);
     width:600px; height:600px; pointer-events:none;
     background:radial-gradient(circle, rgba(79,111,255,0.1) 0%, transparent 65%);
   }
-
+ 
   .home-inner { position:relative; z-index:1; max-width:560px; width:100%; }
-
+ 
   .home-logo { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:48px; }
   .home-logo-name { font-size:1.1rem; font-weight:700; color:var(--white); letter-spacing:-0.01em; }
-
+ 
   .home-eyebrow {
     display:inline-flex; align-items:center; gap:8px;
     font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
@@ -63,7 +63,7 @@
   }
   .home-eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--blue); animation:blink 2s ease-in-out infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
+ 
   .home-title {
     font-size:clamp(2.6rem,7vw,4.2rem); font-weight:900; letter-spacing:-0.05em;
     line-height:1.05; color:var(--white); margin-bottom:16px;
@@ -72,9 +72,9 @@
     background:linear-gradient(135deg,var(--blue) 0%,#a0b4ff 100%);
     -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
   }
-
+ 
   .home-sub { font-size:1rem; color:var(--text2); line-height:1.7; margin-bottom:48px; max-width:420px; margin-left:auto; margin-right:auto; }
-
+ 
   .start-btn {
     display:inline-flex; align-items:center; gap:12px;
     font-family:'Inter',sans-serif; font-size:1rem; font-weight:700;
@@ -91,13 +91,13 @@
   .start-btn:hover { transform:translateY(-3px) scale(1.03); box-shadow:0 16px 48px rgba(79,111,255,0.5); }
   .start-btn:active { transform:translateY(0) scale(0.98); }
   .start-btn .btn-icon { font-size:1.2rem; }
-
+ 
   .home-footer {
     margin-top:56px; display:flex; align-items:center; justify-content:center; gap:24px; flex-wrap:wrap;
   }
   .home-footer-item { display:flex; align-items:center; gap:7px; font-size:0.78rem; color:var(--text3); }
   .home-footer-item .dot { width:5px; height:5px; border-radius:50%; background:var(--blue); opacity:0.5; }
-
+ 
   /* ════════════════════════════
      QR OVERLAY (full screen)
   ════════════════════════════ */
@@ -107,7 +107,7 @@
     display:flex; align-items:center; justify-content:center; padding:24px;
   }
   .qr-overlay.hidden { display:none; }
-
+ 
   .qr-card {
     background:var(--surface); border:1px solid var(--bord2);
     border-radius:24px; padding:44px 40px; max-width:440px; width:100%;
@@ -115,20 +115,20 @@
     animation:cardIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
   }
   @keyframes cardIn { 0%{transform:scale(0.85) translateY(20px);opacity:0} 100%{transform:scale(1) translateY(0);opacity:1} }
-
+ 
   .qr-card-eyebrow { font-size:0.68rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--green); margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; }
   .qr-card-eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); }
   .qr-card-title { font-size:1.5rem; font-weight:800; letter-spacing:-0.03em; color:var(--white); margin-bottom:6px; }
   .qr-card-sid { font-family:monospace; font-size:0.75rem; color:var(--text2); margin-bottom:28px; }
-
+ 
   .qr-img-wrap { background:white; border-radius:14px; padding:18px; display:inline-block; margin-bottom:24px; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
-
+ 
   .qr-url-box {
     background:var(--bg2); border:1px solid var(--border); border-radius:8px;
     padding:10px 14px; font-family:monospace; font-size:0.7rem; color:var(--blue);
     margin-bottom:24px; word-break:break-all; text-align:left; line-height:1.5;
   }
-
+ 
   .qr-actions { display:flex; gap:10px; }
   .qr-proceed-btn {
     flex:1; padding:13px; background:var(--blue); color:white;
@@ -142,7 +142,7 @@
     font-family:'Inter',sans-serif; font-size:0.85rem; cursor:pointer; transition:all 0.18s;
   }
   .qr-copy-btn:hover { color:var(--text); border-color:var(--bord2); }
-
+ 
   /* ════════════════════════════
      HOST DISPLAY VIEW
   ════════════════════════════ */
@@ -161,20 +161,20 @@
   .h-nav-btn:hover { border-color:var(--bord2); color:var(--text); }
   .h-nav-btn.new { background:var(--blue); border-color:var(--blue); color:white; }
   .h-nav-btn.new:hover { background:var(--blue-dk); }
-
+ 
   .h-body { flex:1; padding:36px 48px 40px; display:flex; flex-direction:column; gap:24px; overflow-y:auto; }
-
+ 
   .h-hero { display:flex; justify-content:space-between; align-items:flex-end; }
   .h-eyebrow { font-size:0.66rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--blue); margin-bottom:10px; }
   .h-title { font-size:clamp(1.8rem,3vw,2.6rem); font-weight:800; letter-spacing:-0.04em; line-height:1.1; color:var(--white); }
   .h-title .hl { background:linear-gradient(135deg,var(--blue) 0%,#8ba4ff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-
+ 
   .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px 24px; position:relative; overflow:hidden; }
   .stat-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--blue),transparent); }
   .stat-num { font-size:2rem; font-weight:800; letter-spacing:-0.04em; color:var(--blue); line-height:1; margin-bottom:4px; }
   .stat-label { font-size:0.7rem; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; color:var(--text3); }
-
+ 
   .cloud-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:32px; position:relative; overflow:hidden; min-height:260px; flex:1; }
   .cloud-card::before { content:''; position:absolute; bottom:-40px; right:-40px; width:260px; height:260px; background:radial-gradient(circle,rgba(79,111,255,0.06) 0%,transparent 70%); pointer-events:none; }
   .cloud-empty { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--text3); font-size:0.85rem; }
@@ -182,7 +182,7 @@
   .cloud-grid { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px; width:100%; height:100%; }
   .word-chip { font-weight:700; border-radius:6px; padding:7px 16px; letter-spacing:-0.02em; line-height:1.3; text-align:center; animation:chipIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
   @keyframes chipIn { 0%{opacity:0;transform:scale(0.6) translateY(12px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
-
+ 
   .bars-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px 28px; }
   .bars-title { font-size:0.68rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); margin-bottom:16px; }
   .bar-row { display:flex; align-items:center; gap:12px; margin-bottom:9px; }
@@ -192,7 +192,7 @@
   .bar-track { flex:1; height:5px; background:rgba(255,255,255,0.05); border-radius:100px; overflow:hidden; }
   .bar-fill { height:100%; background:linear-gradient(90deg,var(--blue),#8ba4ff); border-radius:100px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
   .bar-n { font-size:0.73rem; font-weight:700; color:var(--blue); width:22px; text-align:right; flex-shrink:0; }
-
+ 
   /* sessions history */
   .sessions-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 28px; }
   .s-row { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
@@ -203,7 +203,7 @@
   .s-row-btn:hover { border-color:var(--blue); color:var(--blue); }
   .s-row-btn.cur { background:rgba(79,111,255,0.12); border-color:var(--blue); color:var(--blue); }
   .no-s { color:var(--text3); font-size:0.8rem; font-style:italic; }
-
+ 
   /* ════════════════════════════
      PARTICIPANT VIEW
   ════════════════════════════ */
@@ -240,7 +240,7 @@
   @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
   .s-big-title { font-size:1.5rem; font-weight:800; letter-spacing:-0.03em; color:var(--white); margin-bottom:8px; }
   .s-big-sub { font-size:0.88rem; color:var(--text2); line-height:1.7; }
-
+ 
   @media(max-width:640px) {
     .h-body { padding:20px 16px 32px; }
     .stats-row { grid-template-columns:1fr 1fr; }
@@ -250,14 +250,14 @@
 </style>
 </head>
 <body>
-
+ 
 <!-- ══════════════════════════════
      HOME VIEW
 ══════════════════════════════ -->
 <div class="view active" id="view-home">
   <div class="home-glow"></div>
   <div class="home-inner">
-
+ 
     <div class="home-logo">
       <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
         <rect x="4"  y="6"  width="3.5" height="16" rx="1.75" fill="#4f6fff"/>
@@ -269,29 +269,29 @@
       </svg>
       <span class="home-logo-name">COGNITE</span>
     </div>
-
+ 
     <div class="home-eyebrow">Mumbai · 2026</div>
-
+ 
     <h1 class="home-title">
       Impact<br><span class="hl">Tour</span>
     </h1>
-
+ 
     <p class="home-sub">An interactive session for India's industrial leaders. Share your biggest challenges — anonymously, in real time.</p>
-
+ 
     <button class="start-btn" onclick="startSession()">
       <span class="btn-icon">⊕</span>
       Start Session
     </button>
-
+ 
     <div class="home-footer">
       <div class="home-footer-item"><div class="dot"></div>Real-time voting</div>
       <div class="home-footer-item"><div class="dot"></div>Anonymous responses</div>
       <div class="home-footer-item"><div class="dot"></div>Live word cloud</div>
     </div>
-
+ 
   </div>
 </div>
-
+ 
 <!-- ══════════════════════════════
      QR OVERLAY
 ══════════════════════════════ -->
@@ -310,12 +310,12 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- ══════════════════════════════
      HOST DISPLAY VIEW
 ══════════════════════════════ -->
 <div class="view" id="view-host">
-
+ 
   <nav class="h-nav">
     <div class="h-nav-brand">
       <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
@@ -335,16 +335,16 @@
       <button class="h-nav-btn new" onclick="startSession()">New Session</button>
     </div>
   </nav>
-
+ 
   <div class="h-body">
-
+ 
     <div class="h-hero">
       <div>
         <div class="h-eyebrow">Cognite Impact Tour · Mumbai 2026</div>
         <h1 class="h-title">What's keeping leaders<br>up at <span class="hl">night?</span></h1>
       </div>
     </div>
-
+ 
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-num" id="stat-resp">0</div>
@@ -359,7 +359,7 @@
         <div class="stat-label">Votes Cast</div>
       </div>
     </div>
-
+ 
     <div class="cloud-card">
       <div class="cloud-empty" id="cloud-empty">
         <div class="cloud-empty-icon">☁️</div>
@@ -367,24 +367,24 @@
       </div>
       <div class="cloud-grid" id="word-cloud" style="display:none"></div>
     </div>
-
+ 
     <div class="bars-card">
       <div class="bars-title">Breakdown</div>
       <div id="bars-list"></div>
     </div>
-
+ 
     <div class="sessions-card">
       <div class="bars-title">Session History</div>
       <div id="sessions-list"><div class="no-s">No sessions yet.</div></div>
     </div>
-
+ 
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="h-nav-btn" onclick="resetCurrent()" style="color:var(--red);border-color:rgba(255,92,92,0.3)">Reset Current</button>
     </div>
-
+ 
   </div>
 </div>
-
+ 
 <!-- ══════════════════════════════
      PARTICIPANT VIEW
 ══════════════════════════════ -->
@@ -413,7 +413,7 @@
     </div>
   </div>
 </div>
-
+ 
 <script>
 const PROBLEMS = [
   {id:'data-silos',  label:'Data locked in silos across systems',    emoji:'🔒'},
@@ -435,9 +435,9 @@ const CHIP_COLORS = [
   {bg:'rgba(255,80,130,0.10)',color:'#ff6090'},
   {bg:'rgba(130,255,180,0.08)',color:'#7affa8'},
 ];
-
+ 
 let db = null, activeSessionId = null, activeListener = null, selected = new Set();
-
+ 
 // ── FIREBASE ──
 window.addEventListener('load', () => {
   try {
@@ -448,7 +448,7 @@ window.addEventListener('load', () => {
       projectId:   "cognite-impact-tour",
     });
     db = firebase.database(app);
-
+ 
     // participant via QR?
     const sid = new URLSearchParams(window.location.search).get('session');
     if (sid) {
@@ -461,19 +461,19 @@ window.addEventListener('load', () => {
     }
   } catch(e) { console.error(e); }
 });
-
+ 
 // ── VIEWS ──
 function showView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
 }
-
+ 
 // ── SESSION ──
 function genId() {
   const n = new Date(), p = n => String(n).padStart(2,'0');
   return `${n.getFullYear()}${p(n.getMonth()+1)}${p(n.getDate())}-${p(n.getHours())}${p(n.getMinutes())}${p(n.getSeconds())}`;
 }
-
+ 
 function startSession() {
   const sid = genId();
   activeSessionId = sid;
@@ -484,11 +484,11 @@ function startSession() {
   showQRFor(sid);
   loadSessions();
 }
-
+ 
 function getUrl(sid) {
   return window.location.href.split('?')[0] + '?session=' + sid;
 }
-
+ 
 function showQRFor(sid) {
   document.getElementById('qr-sid').textContent = 'Session ID: ' + sid;
   const url = getUrl(sid);
@@ -498,22 +498,22 @@ function showQRFor(sid) {
   new QRCode(canvas, { text:url, width:200, height:200, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.H });
   document.getElementById('qr-overlay').classList.remove('hidden');
 }
-
+ 
 function showQRAgain() { if (activeSessionId) showQRFor(activeSessionId); }
-
+ 
 function goToDisplay() {
   document.getElementById('qr-overlay').classList.add('hidden');
   showView('host');
   loadSessions();
 }
-
+ 
 function copyUrl() {
   navigator.clipboard.writeText(document.getElementById('qr-url-box').textContent);
   const btn = document.getElementById('qr-copy-btn');
   btn.textContent = 'Copied!';
   setTimeout(() => btn.textContent = 'Copy Link', 2000);
 }
-
+ 
 // ── LISTEN ──
 function listenSession(sid) {
   if (!db) return;
@@ -524,7 +524,7 @@ function listenSession(sid) {
   });
   activeListener = () => ref.off('value', fn);
 }
-
+ 
 function loadSessions() {
   if (!db) return;
   db.ref('sessions').once('value', snap => {
@@ -545,7 +545,7 @@ function loadSessions() {
     }).join('');
   });
 }
-
+ 
 function switchSession(sid) {
   activeSessionId = sid;
   document.getElementById('h-nav-session').textContent = sid;
@@ -553,7 +553,7 @@ function switchSession(sid) {
   listenSession(sid);
   loadSessions();
 }
-
+ 
 // ── DISPLAY ──
 function renderAll(votes, responses) {
   document.getElementById('stat-resp').textContent = responses;
@@ -593,7 +593,7 @@ function resetCurrent() {
   db.ref('sessions/'+activeSessionId+'/votes').remove();
   db.ref('sessions/'+activeSessionId+'/meta/responses').set(0);
 }
-
+ 
 // ── PARTICIPANT ──
 function renderProblems() {
   document.getElementById('problems-list').innerHTML = PROBLEMS.map(p=>`
@@ -630,3 +630,4 @@ async function submitVote() {
 </script>
 </body>
 </html>
+ 
