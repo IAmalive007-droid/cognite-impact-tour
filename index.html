@@ -897,18 +897,43 @@ function enterPresent() {
  
 function renderPresent(votes, responses) {
   const presResp = document.getElementById('pres-resp');
-  const presVotes = document.getElementById('pres-votes');
   if (presResp) animateCount(presResp, responses);
  
   const cloud = document.getElementById('pres-cloud');
   if (!cloud) return;
   const sorted = PROBLEMS.map(p=>({...p,count:votes[p.id]||0})).sort((a,b)=>b.count-a.count).filter(p=>p.count>0);
   if (sorted.length === 0) { cloud.innerHTML = '<div class="present-empty">Waiting for responses…</div>'; return; }
-  const max = sorted[0].count || 1;
+ 
+  const total = sorted.reduce((s,p)=>s+p.count,0) || 1;
+  const max   = sorted[0].count || 1;
+  const rankLabels  = ['#1','#2','#3'];
+  const rankClasses = ['gold','silver','bronze'];
+  const BAR_COLORS  = ['#ccd4ff','#ff8c5a','#27c486','#c47aff','#ffc845','#00c8dc','#ff6090','#7affa8'];
+ 
   cloud.innerHTML = sorted.map((p,i) => {
-    const size = (1.1 + (p.count/max)*2.8).toFixed(2);
-    const col = COLORS[i % COLORS.length];
-    return `<div class="wchip" style="font-size:${size}rem;background:${col.bg};color:${col.c};border:1px solid ${col.c}22;padding:10px 22px">${p.emoji} ${p.label}</div>`;
+    const pct    = Math.round(p.count / total * 100);
+    const barW   = Math.round(p.count / max * 100);
+    const color  = BAR_COLORS[i % BAR_COLORS.length];
+    const delay  = (i * 0.05).toFixed(2);
+    const isTop  = i === 0;
+    const rankBadge = i < 3 ? `<span class="pcard-rank ${rankClasses[i]}">${rankLabels[i]}</span>` : '';
+    return `
+    <div class="pcard-wrap${isTop?' is-top':''}" style="animation-delay:${delay}s">
+      <div class="pcard-top">
+        <div class="pcard-left">
+          <span class="pcard-emoji">${p.emoji}</span>
+          <span class="pcard-label">${p.label}</span>
+        </div>
+        <span class="pcard-pct">${pct}%</span>
+      </div>
+      <div class="pcard-bar-track">
+        <div class="pcard-bar-fill" style="width:${barW}%;background:${color}"></div>
+      </div>
+      <div class="pcard-bottom">
+        <span class="pcard-votes">${p.count} vote${p.count !== 1 ? 's' : ''}</span>
+        ${rankBadge}
+      </div>
+    </div>`;
   }).join('');
 }
  
