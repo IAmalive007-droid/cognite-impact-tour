@@ -63,7 +63,7 @@
     margin-bottom:36px;
     display:flex; flex-direction:column; align-items:center;
   }
-  .cognite-logo-img { width:112px; height:auto; display:block; }
+  .cognite-logo-img { width:112px; height:auto; display:block; filter:brightness(0) invert(1); }
  
   .land-inner {
     position:relative; z-index:1; max-width:660px; width:100%;
@@ -181,28 +181,42 @@
   .dash-title { font-family:var(--heading); font-size:clamp(1.6rem,3vw,2.4rem); font-weight:700; letter-spacing:-0.03em; line-height:1.1; color:#fafafa; }
   .dash-title .hl { color:var(--lavender); }
  
-  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .stats-row { display:grid; grid-template-columns:1fr; gap:14px; }
   .stat-card { background:rgba(255,255,255,0.05); border:1px solid var(--bord); border-radius:10px; padding:18px 22px; position:relative; overflow:hidden; }
   .stat-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--lavender),transparent); }
-  .stat-num { font-family:var(--heading); font-size:2.2rem; font-weight:700; letter-spacing:-0.04em; color:var(--lavender); line-height:1; margin-bottom:4px; }
+  .stat-num { font-family:var(--heading); font-size:3.5rem; font-weight:700; letter-spacing:-0.05em; color:var(--lavender); line-height:1; margin-bottom:6px; }
   .stat-lbl { font-size:0.66rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); font-family:var(--body); }
  
-  .cloud-card { background:rgba(255,255,255,0.04); border:1px solid var(--bord); border-radius:14px; padding:32px; position:relative; overflow:hidden; min-height:240px; flex:1; }
-  .cloud-empty { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--text3); font-size:0.82rem; font-family:var(--body); }
-  .cloud-empty-icon { font-size:2rem; opacity:0.25; }
-  .cloud-grid { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 14px; width:100%; }
-  .wchip { font-weight:700; border-radius:6px; padding:7px 16px; letter-spacing:-0.01em; line-height:1.3; text-align:center; animation:cin 0.45s cubic-bezier(0.34,1.56,0.64,1) both; font-family:var(--body); }
-  @keyframes cin { 0%{opacity:0;transform:scale(0.5) translateY(10px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+  /* ── RANKED LIST ── */
+  .ranked-card { background:rgba(255,255,255,0.04); border:1px solid var(--bord); border-radius:14px; padding:12px 16px; flex:1; }
+  .ranked-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--text3); font-size:0.82rem; font-family:var(--body); padding:48px 0; }
+  .ranked-empty-icon { font-size:2rem; opacity:0.25; }
+  .ranked-header { display:flex; align-items:center; justify-content:flex-end; padding:0 12px 8px; }
+  .ranked-header-lbl { font-size:0.62rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); font-family:var(--body); }
  
-  .bars-card { background:rgba(255,255,255,0.04); border:1px solid var(--bord); border-radius:14px; padding:22px 26px; }
-  .bars-ttl { font-size:0.64rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--text3); margin-bottom:14px; font-family:var(--body); }
-  .brow { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
-  .brow:last-child { margin-bottom:0; }
-  .bemoji { font-size:0.9rem; flex-shrink:0; width:20px; text-align:center; }
-  .bname { font-size:0.76rem; font-weight:500; color:var(--text2); width:180px; flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:var(--body); }
-  .btrack { flex:1; height:5px; background:rgba(255,255,255,0.05); border-radius:100px; overflow:hidden; }
-  .bfill { height:100%; background:linear-gradient(90deg,var(--lavender),#8ba4ff); border-radius:100px; transition:width 0.7s cubic-bezier(0.4,0,0.2,1); }
-  .bnum { font-size:0.72rem; font-weight:700; color:var(--lavender); width:22px; text-align:right; flex-shrink:0; font-family:var(--body); }
+  .rrow {
+    display:flex; align-items:center; gap:12px;
+    padding:11px 12px; border-radius:8px; margin-bottom:4px;
+    transition:background 0.3s, transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+    position:relative; overflow:hidden;
+  }
+  .rrow:last-child { margin-bottom:0; }
+  .rrow-bg {
+    position:absolute; inset:0; border-radius:8px; opacity:0.12;
+    transition:width 0.7s cubic-bezier(0.4,0,0.2,1);
+  }
+  .rrow-rank { font-family:var(--heading); font-size:0.7rem; font-weight:700; color:var(--text3); width:18px; text-align:center; flex-shrink:0; z-index:1; }
+  .rrow-rank.gold { color:#ffc845; }
+  .rrow-rank.silver { color:#b0bec5; }
+  .rrow-rank.bronze { color:#cd8c52; }
+  .rrow-emoji { font-size:1.1rem; flex-shrink:0; z-index:1; }
+  .rrow-label { font-family:var(--body); font-size:0.9rem; font-weight:600; color:var(--text); flex:1; z-index:1; }
+  .rrow-count { font-family:var(--heading); font-size:1.05rem; font-weight:700; color:var(--lavender); min-width:28px; text-align:right; flex-shrink:0; z-index:1; transition:color 0.3s; }
+  .rrow-zero .rrow-label { color:var(--text3); font-weight:400; }
+  .rrow-zero .rrow-count { color:var(--text3); }
+ 
+  /* present mode word cloud kept for presentation screen */
+  .wchip { font-weight:700; border-radius:6px; padding:7px 16px; letter-spacing:-0.01em; line-height:1.3; text-align:center; font-family:var(--body); }
  
   /* ── RESET MODAL ── */
   .modal-overlay { display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:24px; }
@@ -319,7 +333,6 @@
  
   @media(max-width:600px) {
     .dash-body { padding:18px 16px 32px; }
-    .stats-row { grid-template-columns:1fr 1fr; }
     .bname { width:100px; }
     .dash-nav { padding:0 16px; }
     .location-btn { top:20px; right:16px; }
@@ -447,29 +460,19 @@
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-num" id="stat-resp">0</div>
-        <div class="stat-lbl">Responses</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-votes">0</div>
-        <div class="stat-lbl">Votes Cast</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="stat-top" style="font-size:0.8rem;color:var(--text);line-height:1.4">—</div>
-        <div class="stat-lbl">Top Challenge</div>
+        <div class="stat-lbl">People Voted</div>
       </div>
     </div>
  
-    <div class="cloud-card">
-      <div class="cloud-empty" id="cloud-empty">
-        <div class="cloud-empty-icon">☁️</div>
+    <div class="ranked-card">
+      <div id="ranked-empty" class="ranked-empty">
+        <div class="ranked-empty-icon">📊</div>
         <span>Waiting for audience responses…</span>
       </div>
-      <div class="cloud-grid" id="cloud-grid" style="display:none"></div>
-    </div>
- 
-    <div class="bars-card">
-      <div class="bars-ttl">Breakdown</div>
-      <div id="bars"></div>
+      <div id="ranked-list" style="display:none">
+        <div class="ranked-header"><span class="ranked-header-lbl">Votes</span></div>
+        <div id="ranked-rows"></div>
+      </div>
     </div>
  
     <div style="display:flex;justify-content:flex-end">
@@ -488,13 +491,9 @@
     <div class="present-stats">
       <div class="present-stat">
         <div class="present-stat-num" id="pres-resp">0</div>
-        <div class="present-stat-lbl">Responses</div>
+        <div class="present-stat-lbl">People Voted</div>
       </div>
-      <div class="present-divider"></div>
-      <div class="present-stat">
-        <div class="present-stat-num" id="pres-votes">0</div>
-        <div class="present-stat-lbl">Votes Cast</div>
-      </div>
+ 
     </div>
     <div class="present-top-label">Live challenges from the room</div>
     <div class="present-cloud" id="pres-cloud">
@@ -727,34 +726,47 @@ function startListening(sid) {
  
 function renderDash(votes, responses) {
   animateCount(document.getElementById('stat-resp'), responses);
-  const total = Object.values(votes).reduce((a,b)=>a+b,0);
-  animateCount(document.getElementById('stat-votes'), total);
+ 
+ 
+  // Sort high → low
   const sorted = PROBLEMS.map(p=>({...p,count:votes[p.id]||0})).sort((a,b)=>b.count-a.count);
   const top = sorted[0];
   const topEl = document.getElementById('stat-top');
   if (top && top.count > 0) { topEl.textContent = top.emoji + ' ' + top.label; topEl.style.fontSize=''; }
   else { topEl.textContent = '—'; topEl.style.fontSize='2rem'; }
-  const cloud = document.getElementById('cloud-grid');
-  const empty = document.getElementById('cloud-empty');
+ 
   const hasData = sorted.some(p=>p.count>0);
-  if (!hasData) { empty.style.display='flex'; cloud.style.display='none'; }
-  else {
-    empty.style.display='none'; cloud.style.display='flex';
-    const max = sorted[0].count || 1;
-    cloud.innerHTML = sorted.filter(p=>p.count>0).map((p,i) => {
-      const size = (0.78 + (p.count/max)*1.5).toFixed(2);
-      const col = COLORS[i % COLORS.length];
-      return `<div class="wchip" style="font-size:${size}rem;background:${col.bg};color:${col.c};border:1px solid ${col.c}22">${p.emoji} ${p.label}</div>`;
-    }).join('');
+  const emptyEl = document.getElementById('ranked-empty');
+  const listEl  = document.getElementById('ranked-list');
+  const rowsEl  = document.getElementById('ranked-rows');
+ 
+  if (!hasData) {
+    emptyEl.style.display = 'flex';
+    listEl.style.display  = 'none';
+    return;
   }
-  const max2 = sorted[0]?.count || 1;
-  document.getElementById('bars').innerHTML = sorted.map(p => `
-    <div class="brow">
-      <div class="bemoji">${p.emoji}</div>
-      <div class="bname">${p.label}</div>
-      <div class="btrack"><div class="bfill" style="width:${p.count>0?(p.count/max2*100).toFixed(1):0}%"></div></div>
-      <div class="bnum">${p.count}</div>
-    </div>`).join('');
+ 
+  emptyEl.style.display = 'none';
+  listEl.style.display  = 'block';
+ 
+  const rankLabels = ['1', '2', '3'];
+  const rankClasses = ['gold', 'silver', 'bronze'];
+  const max = sorted[0].count || 1;
+ 
+  rowsEl.innerHTML = sorted.map((p, i) => {
+    const col = COLORS[i % COLORS.length];
+    const isZero = p.count === 0;
+    const rankNum = i < 3 && !isZero ? `<span class="rrow-rank ${rankClasses[i]}">${rankLabels[i]}</span>` : `<span class="rrow-rank">${i+1}</span>`;
+    const bgWidth = isZero ? 0 : Math.round(p.count / max * 100);
+    return `
+      <div class="rrow${isZero ? ' rrow-zero' : ''}">
+        <div class="rrow-bg" style="background:${col.c};width:${bgWidth}%"></div>
+        ${rankNum}
+        <span class="rrow-emoji">${p.emoji}</span>
+        <span class="rrow-label">${p.label}</span>
+        <span class="rrow-count">${p.count > 0 ? p.count : ''}</span>
+      </div>`;
+  }).join('');
 }
  
 function enterPresent() {
@@ -766,8 +778,7 @@ function renderPresent(votes, responses) {
   const presResp = document.getElementById('pres-resp');
   const presVotes = document.getElementById('pres-votes');
   if (presResp) animateCount(presResp, responses);
-  const total = Object.values(votes).reduce((a,b)=>a+b,0);
-  if (presVotes) animateCount(presVotes, total);
+ 
   const cloud = document.getElementById('pres-cloud');
   if (!cloud) return;
   const sorted = PROBLEMS.map(p=>({...p,count:votes[p.id]||0})).sort((a,b)=>b.count-a.count).filter(p=>p.count>0);
