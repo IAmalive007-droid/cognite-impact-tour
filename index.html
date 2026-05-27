@@ -235,19 +235,47 @@
      PAGE 4 — PARTICIPANT
   ════════════════════ */
   #page-participant {
-    align-items:center; justify-content:center;
-    background:linear-gradient(to bottom, #14161f, #3d425c);
+    background: linear-gradient(to bottom, #14161f, #3d425c);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* prevent page itself from scrolling */
   }
-  .part-wrap { max-width:480px; width:100%; padding:44px 22px calc(72px + env(safe-area-inset-bottom, 0px)); }
  
-  .part-chip { display:inline-flex; align-items:center; gap:7px; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--lavender); background:rgba(204,212,255,0.1); border:1px solid rgba(204,212,255,0.22); padding:5px 12px; border-radius:100px; margin-bottom:20px; font-family:var(--body); }
+  /* scrollable content area */
+  .part-scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+ 
+  /* inner content max-width + padding */
+  .part-wrap {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 36px 20px 24px;
+  }
+ 
+  /* fixed bottom bar */
+  .part-footer {
+    flex-shrink: 0;
+    background: linear-gradient(to top, #14161f 70%, transparent);
+    padding: 16px 20px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+  .part-footer-inner {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+ 
+  .part-chip { display:inline-flex; align-items:center; gap:7px; font-size:0.65rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--lavender); background:rgba(204,212,255,0.1); border:1px solid rgba(204,212,255,0.22); padding:5px 12px; border-radius:100px; margin-bottom:16px; font-family:var(--body); }
   .part-chip::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--lavender); animation:blink 2s infinite; }
  
-  .part-title { font-family:var(--heading); font-size:clamp(1.8rem,6vw,2.8rem); font-weight:700; letter-spacing:-0.03em; line-height:1.1; color:#fafafa; margin-bottom:10px; }
+  .part-title { font-family:var(--heading); font-size:clamp(1.5rem,7vw,2.2rem); font-weight:700; letter-spacing:-0.03em; line-height:1.15; color:#fafafa; margin-bottom:8px; }
   .part-title .hl { color:var(--lavender); }
-  .part-sub { font-size:0.88rem; color:var(--text2); line-height:1.7; margin-bottom:28px; font-family:var(--body); }
+  .part-sub { font-size:0.85rem; color:var(--text2); line-height:1.65; margin-bottom:20px; font-family:var(--body); }
  
-  .rule { display:flex; align-items:center; gap:9px; background:rgba(255,255,255,0.05); border:1px solid var(--bord); border-left:3px solid var(--lavender); border-radius:0 8px 8px 0; padding:10px 14px; font-size:0.78rem; color:var(--text2); margin-bottom:22px; font-family:var(--body); }
+  .rule { display:flex; align-items:center; gap:9px; background:rgba(255,255,255,0.05); border:1px solid var(--bord); border-left:3px solid var(--lavender); border-radius:0 8px 8px 0; padding:10px 14px; font-size:0.78rem; color:var(--text2); margin-bottom:18px; font-family:var(--body); }
   .rule strong { color:var(--text); font-weight:600; }
  
   .connect-banner { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.05); border:1px solid var(--bord); border-radius:8px; padding:10px 14px; font-size:0.78rem; color:var(--text2); margin-bottom:16px; font-family:var(--body); }
@@ -259,7 +287,7 @@
   .expired-title { font-family:var(--heading); font-size:1.3rem; font-weight:700; color:#fafafa; margin-bottom:8px; }
   .expired-sub { font-size:0.85rem; color:var(--text2); line-height:1.7; font-family:var(--body); }
  
-  .plist { display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .plist { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
   .pcard { background:rgba(255,255,255,0.05); border:1.5px solid var(--bord); border-radius:10px; padding:13px 15px; cursor:pointer; transition:all 0.14s; display:flex; align-items:center; gap:11px; user-select:none; position:relative; overflow:hidden; }
   .pcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--lavender); opacity:0; transition:opacity 0.14s; }
   .pcard:hover { border-color:var(--bord2); background:rgba(255,255,255,0.08); }
@@ -271,16 +299,17 @@
   .pemoji { font-size:1.1rem; flex-shrink:0; }
   .plabel { font-size:0.87rem; font-weight:500; color:var(--text); line-height:1.35; flex:1; font-family:var(--body); }
  
-  .crow { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-size:0.74rem; font-family:var(--body); }
+  /* selection status row — now lives inside footer */
+  .crow { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-size:0.74rem; font-family:var(--body); }
   .cdots { display:flex; gap:5px; }
   .cdot { width:7px; height:7px; border-radius:50%; border:1.5px solid var(--bord2); transition:all 0.18s; }
   .cdot.on { background:var(--lavender); border-color:var(--lavender); }
  
-  .sub-btn { width:100%; padding:12px; background:var(--lavender); color:#1a1a1a; border:none; border-radius:6px; font-family:var(--body); font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0; }
+  .sub-btn { width:100%; padding:14px; background:var(--lavender); color:#1a1a1a; border:none; border-radius:8px; font-family:var(--body); font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.2s; letter-spacing:0; }
   .sub-btn:hover:not(:disabled) { background:#b8c3ff; box-shadow:0 6px 20px rgba(204,212,255,0.25); transform:translateY(-1px); }
   .sub-btn:disabled { opacity:0.25; cursor:not-allowed; transform:none; box-shadow:none; }
  
-  .sub-error { display:none; margin-top:10px; padding:10px 14px; background:rgba(255,92,92,0.08); border:1px solid rgba(255,92,92,0.2); border-radius:8px; font-size:0.78rem; color:var(--red); text-align:center; font-family:var(--body); }
+  .sub-error { display:none; margin-top:8px; padding:10px 14px; background:rgba(255,92,92,0.08); border:1px solid rgba(255,92,92,0.2); border-radius:8px; font-size:0.78rem; color:var(--red); text-align:center; font-family:var(--body); }
   .sub-error.show { display:block; }
  
   .done-view { display:none; text-align:center; padding:60px 20px; }
@@ -343,17 +372,17 @@
  
     <div class="qr-tag"><div class="qr-tag-dot"></div>Session Active</div>
     <div class="qr-title">Scan to vote</div>
-    <div class="qr-sid" id="qr-sid">—</div>
+    <div class="qr-sid" id="qr-sid" style="display:none">—</div>
  
     <div class="qr-box">
       <div id="qr-canvas"></div>
     </div>
  
-    <div class="qr-url" id="qr-url">—</div>
+    <div class="qr-url" id="qr-url" style="display:none">—</div>
  
     <div class="qr-actions">
       <button class="qr-dash-btn" onclick="goToDash()">Open Dashboard →</button>
-      <button class="qr-copy-btn" id="qr-copy-btn" onclick="copyUrl()">Copy</button>
+ 
     </div>
  
   </div>
@@ -367,7 +396,7 @@
   <nav class="dash-nav">
     <div class="dash-nav-left">
       <img src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite" style="height:28px;width:auto;opacity:0.75;" />
-      <div class="dash-nav-sid" id="dash-nav-sid">—</div>
+      <div class="dash-nav-sid" id="dash-nav-sid" style="display:none">—</div>
     </div>
     <div class="dash-nav-right">
       <div class="live-chip"><div class="live-dot"></div>Live</div>
@@ -448,20 +477,43 @@
      PAGE 4 · PARTICIPANT
 ════════════════════════════════ -->
 <div class="page" id="page-participant">
-  <div class="part-wrap">
  
-    <div id="part-form">
-      <div class="part-chip">Mumbai Impact Tour · 2026</div>
-      <h1 class="part-title">What's your<br><span class="hl">biggest challenge</span><br>right now?</h1>
-      <p class="part-sub">Select up to 3 challenges your organization is facing. Your response is anonymous.</p>
-      <div class="rule"><span>📌</span><span>Choose up to <strong>3 challenges</strong> that resonate most</span></div>
+  <!-- scrollable area -->
+  <div class="part-scroll">
+    <div class="part-wrap">
  
-      <div class="connect-banner" id="connect-banner">
-        <div class="connect-spinner"></div>
-        <span>Connecting to session…</span>
+      <div id="part-form">
+        <div class="part-chip">Mumbai Impact Tour · 2026</div>
+        <h1 class="part-title">What's your<br><span class="hl">biggest challenge</span><br>right now?</h1>
+        <p class="part-sub">Select up to 3 challenges your organization is facing. Your response is anonymous.</p>
+        <div class="rule"><span>📌</span><span>Choose up to <strong>3 challenges</strong> that resonate most</span></div>
+ 
+        <div class="connect-banner" id="connect-banner">
+          <div class="connect-spinner"></div>
+          <span>Connecting to session…</span>
+        </div>
+ 
+        <div class="plist" id="plist"></div>
       </div>
  
-      <div class="plist" id="plist"></div>
+      <div class="expired-view" id="expired-view" style="display:none">
+        <div class="expired-icon">⏱️</div>
+        <div class="expired-title">Session not found</div>
+        <p class="expired-sub">This session may have ended or the link is invalid.<br>Ask the presenter for a new QR code.</p>
+      </div>
+ 
+      <div class="done-view" id="done-view">
+        <div class="done-icon">✓</div>
+        <div class="done-title">Response submitted!</div>
+        <p class="done-sub">Your challenges are now live on the display screen.<br>See what the room is thinking.</p>
+      </div>
+ 
+    </div>
+  </div>
+ 
+  <!-- fixed bottom submit bar -->
+  <div class="part-footer" id="part-footer">
+    <div class="part-footer-inner">
       <div class="crow">
         <span id="ctext" style="color:var(--text3)">Nothing selected yet</span>
         <div class="cdots">
@@ -473,20 +525,8 @@
       <button class="sub-btn" id="sub-btn" disabled onclick="submitVote()">Submit →</button>
       <div class="sub-error" id="sub-error">Something went wrong. Please try again.</div>
     </div>
- 
-    <div class="expired-view" id="expired-view" style="display:none">
-      <div class="expired-icon">⏱️</div>
-      <div class="expired-title">Session not found</div>
-      <p class="expired-sub">This session may have ended or the link is invalid.<br>Ask the presenter for a new QR code.</p>
-    </div>
- 
-    <div class="done-view" id="done-view">
-      <div class="done-icon">✓</div>
-      <div class="done-title">Response submitted!</div>
-      <p class="done-sub">Your challenges are now live on the display screen.<br>See what the room is thinking.</p>
-    </div>
- 
   </div>
+ 
 </div>
  
 <!-- RESET MODAL -->
@@ -698,9 +738,11 @@ async function initParticipant(sid) {
   const banner = document.getElementById('connect-banner');
   const partForm = document.getElementById('part-form');
   const expiredView = document.getElementById('expired-view');
+  const footer = document.getElementById('part-footer');
   const doneKey = 'voted_' + sid;
   if (localStorage.getItem(doneKey)) {
     partForm.style.display = 'none';
+    footer.style.display = 'none';
     document.getElementById('done-view').classList.add('show');
     return;
   }
@@ -711,6 +753,7 @@ async function initParticipant(sid) {
     const snap = await db.ref('sessions/' + sid + '/meta').once('value');
     if (!snap.exists()) {
       partForm.style.display = 'none';
+      footer.style.display = 'none';
       expiredView.style.display = 'block';
       return;
     }
@@ -756,6 +799,7 @@ async function submitVote() {
     await db.ref().update(upd);
     localStorage.setItem('voted_' + sessionId, '1');
     document.getElementById('part-form').style.display = 'none';
+    document.getElementById('part-footer').style.display = 'none';
     document.getElementById('done-view').classList.add('show');
   } catch(e) {
     console.error('Submit error:', e);
