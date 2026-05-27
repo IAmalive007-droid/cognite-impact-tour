@@ -232,14 +232,14 @@
   .modal-confirm:hover { background:rgba(255,92,92,0.25); }
  
   /* ── PRESENTATION MODE ── */
-  #page-present { align-items:center; justify-content:center; background:linear-gradient(to bottom, #14161f, #3d425c); }
+  #page-present { align-items:center; justify-content:center; background:linear-gradient(to bottom, #14161f, #3d425c); position:relative; }
   .present-inner { position:relative; z-index:1; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; }
   .present-stats { display:flex; gap:40px; margin-bottom:32px; align-items:center; }
   .present-stat { text-align:center; }
   .present-stat-num { font-family:var(--heading); font-size:2.8rem; font-weight:700; letter-spacing:-0.06em; color:var(--lavender); line-height:1; }
   .present-stat-lbl { font-size:0.6rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text3); margin-top:4px; font-family:var(--body); }
   .present-divider { width:1px; height:48px; background:var(--bord2); }
-  .present-cloud { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px 20px; max-width:900px; }
+  .present-cloud { display:flex; flex-direction:column; gap:10px; width:min(700px,90vw); }
   .present-empty { color:var(--text3); font-size:1rem; font-family:var(--body); }
   .present-exit { position:absolute; top:20px; right:24px; font-family:var(--body); font-size:0.7rem; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--bord); background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; }
   .present-exit:hover { color:var(--text); border-color:var(--bord2); }
@@ -618,6 +618,20 @@ window.addEventListener('load', async () => {
       });
       db = firebase.database(app);
     } catch(e) { console.error('Firebase:', e); }
+    // Restore last presenter session if it exists
+    const savedSession = localStorage.getItem('presenterSession');
+    if (savedSession) {
+      sessionId = savedSession;
+      document.getElementById('dash-nav-sid').textContent = savedSession;
+      // Rebuild QR URL silently
+      const url = window.location.href.split('?')[0] + '?s=' + savedSession;
+      document.getElementById('qr-url').textContent = url;
+      document.getElementById('qr-sid').textContent = 'Session · ' + savedSession;
+      const canvas = document.getElementById('qr-canvas');
+      canvas.innerHTML = '';
+      new QRCode(canvas, { text:url, width:220, height:220, colorDark:'#000', colorLight:'#fff', correctLevel:QRCode.CorrectLevel.H });
+      startListening(savedSession);
+    }
     goToPage('page-landing');
     return;
   }
@@ -683,6 +697,7 @@ function generateQR() {
   const p = n => String(n).padStart(2,'0');
   sessionId = `${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}`;
   if (db) db.ref(`sessions/${sessionId}/meta`).set({ created: new Date().toISOString(), responses: 0 });
+  localStorage.setItem('presenterSession', sessionId);
   const url = window.location.href.split('?')[0] + '?s=' + sessionId;
   document.getElementById('qr-sid').textContent = 'Session · ' + sessionId;
   document.getElementById('qr-url').textContent = url;
