@@ -356,7 +356,7 @@
 <div class="page active" id="page-loading">
   <img class="loader-logo" src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite" />
   <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-  <div class="loader-text">Loading…</div>
+  <div class="loader-text" id="loader-text">Connecting to session…</div>
 </div>
  
  
@@ -518,11 +518,6 @@
         <p class="part-sub">Select up to 3 challenges your organization is facing. Your response is anonymous.</p>
         <div class="rule"><span>📌</span><span>Choose up to <strong>3 challenges</strong> that resonate most</span></div>
  
-        <div class="connect-banner" id="connect-banner">
-          <div class="connect-spinner"></div>
-          <span>Connecting to session…</span>
-        </div>
- 
         <div class="plist" id="plist"></div>
       </div>
  
@@ -610,13 +605,27 @@ function animateCount(el, to) {
   }, 22);
 }
  
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   const sid = new URLSearchParams(window.location.search).get('s');
  
-  // Always show loading screen first, then route after a short delay
-  // so the user never sees a flash of the wrong page
-  const minLoadMs = sid ? 900 : 0; // participant gets a loader; presenter goes straight in
-  const start = Date.now();
+  if (!sid) {
+    // Presenter: no loading needed, go straight to landing
+    try {
+      const app = firebase.initializeApp({
+        apiKey:      "AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k",
+        authDomain:  "cognite-impact-tour.firebaseapp.com",
+        databaseURL: "https://cognite-impact-tour-default-rtdb.firebaseio.com",
+        projectId:   "cognite-impact-tour",
+      });
+      db = firebase.database(app);
+    } catch(e) { console.error('Firebase:', e); }
+    goToPage('page-landing');
+    return;
+  }
+ 
+  // Participant: show loading screen while we init Firebase + verify session
+  sessionId = sid;
+  const loaderText = document.getElementById('loader-text');
  
   try {
     const app = firebase.initializeApp({
@@ -626,21 +635,43 @@ window.addEventListener('load', () => {
       projectId:   "cognite-impact-tour",
     });
     db = firebase.database(app);
-  } catch(e) { console.error('Firebase:', e); }
+  } catch(e) {
+    console.error('Firebase:', e);
+    if (loaderText) loaderText.textContent = 'Connection failed. Please refresh.';
+    return;
+  }
  
-  const elapsed = Date.now() - start;
-  const delay = Math.max(0, minLoadMs - elapsed);
+  // Check localStorage — already voted?
+  const doneKey = 'voted_' + sid;
+  if (localStorage.getItem(doneKey)) {
+    renderProblems();
+    goToPage('page-participant');
+    document.getElementById('part-form').style.display = 'none';
+    document.getElementById('part-footer').style.display = 'none';
+    document.getElementById('done-view').classList.add('show');
+    return;
+  }
  
-  setTimeout(() => {
-    if (sid) {
-      sessionId = sid;
+  // Verify session exists in Firebase
+  try {
+    if (loaderText) loaderText.textContent = 'Connecting to session…';
+    const snap = await db.ref('sessions/' + sid + '/meta').once('value');
+    if (!snap.exists()) {
       renderProblems();
       goToPage('page-participant');
-      initParticipant(sid);
-    } else {
-      goToPage('page-landing');
+      document.getElementById('part-form').style.display = 'none';
+      document.getElementById('part-footer').style.display = 'none';
+      document.getElementById('expired-view').style.display = 'block';
+      return;
     }
-  }, delay);
+  } catch(e) {
+    if (loaderText) loaderText.textContent = 'Could not verify session. Try refreshing.';
+    return;
+  }
+ 
+  // All good — render form
+  renderProblems();
+  goToPage('page-participant');
 });
  
 function goToPage(id) {
@@ -778,33 +809,7 @@ function renderProblems() {
     </div>`).join('');
 }
  
-async function initParticipant(sid) {
-  const banner = document.getElementById('connect-banner');
-  const partForm = document.getElementById('part-form');
-  const expiredView = document.getElementById('expired-view');
-  const footer = document.getElementById('part-footer');
-  const doneKey = 'voted_' + sid;
-  if (localStorage.getItem(doneKey)) {
-    partForm.style.display = 'none';
-    footer.style.display = 'none';
-    document.getElementById('done-view').classList.add('show');
-    return;
-  }
-  let attempts = 0;
-  while (!db && attempts < 30) { await new Promise(r => setTimeout(r, 100)); attempts++; }
-  if (!db) { banner.innerHTML = '<span style="color:#ff5c5c">Could not connect. Please refresh.</span>'; return; }
-  try {
-    const snap = await db.ref('sessions/' + sid + '/meta').once('value');
-    if (!snap.exists()) {
-      partForm.style.display = 'none';
-      footer.style.display = 'none';
-      expiredView.style.display = 'block';
-      return;
-    }
-  } catch(e) { banner.innerHTML = '<span style="color:#ff5c5c">Could not verify session. Try refreshing.</span>'; return; }
-  banner.style.display = 'none';
-  if (selected.size > 0) document.getElementById('sub-btn').disabled = false;
-}
+// initParticipant logic moved into window load handler
  
 function toggle(id) {
   if (selected.has(id)) {
@@ -826,8 +831,7 @@ function toggle(id) {
   const t = document.getElementById('ctext');
   t.textContent = selected.size === 0 ? 'Nothing selected yet' : `${selected.size} of 3 selected`;
   t.style.color = selected.size > 0 ? 'var(--lavender)' : 'var(--text3)';
-  const bannerVisible = document.getElementById('connect-banner').style.display !== 'none';
-  document.getElementById('sub-btn').disabled = selected.size === 0 || bannerVisible;
+  document.getElementById('sub-btn').disabled = selected.size === 0;
 }
  
 async function submitVote() {
