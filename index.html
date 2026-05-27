@@ -730,10 +730,6 @@ function renderDash(votes, responses) {
  
   // Sort high → low
   const sorted = PROBLEMS.map(p=>({...p,count:votes[p.id]||0})).sort((a,b)=>b.count-a.count);
-  const top = sorted[0];
-  const topEl = document.getElementById('stat-top');
-  if (top && top.count > 0) { topEl.textContent = top.emoji + ' ' + top.label; topEl.style.fontSize=''; }
-  else { topEl.textContent = '—'; topEl.style.fontSize='2rem'; }
  
   const hasData = sorted.some(p=>p.count>0);
   const emptyEl = document.getElementById('ranked-empty');
