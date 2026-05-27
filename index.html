@@ -324,14 +324,46 @@
     .dash-nav { padding:0 16px; }
     .location-btn { top:20px; right:16px; }
   }
+ 
+  /* ── LOADING SCREEN ── */
+  #page-loading {
+    align-items:center; justify-content:center;
+    background:linear-gradient(to bottom, #14161f, #3d425c);
+    flex-direction:column; gap:20px;
+  }
+  .loader-logo { width:72px; height:auto; opacity:0.9; animation:logoFade 0.5s ease both; }
+  @keyframes logoFade { from{opacity:0;transform:scale(0.85)} to{opacity:0.9;transform:scale(1)} }
+  .loader-bar-wrap {
+    width:160px; height:2px; background:rgba(255,255,255,0.08); border-radius:100px; overflow:hidden;
+  }
+  .loader-bar {
+    height:100%; width:0%; background:var(--lavender); border-radius:100px;
+    animation:loadBar 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  @keyframes loadBar { 0%{width:0%} 60%{width:75%} 100%{width:100%} }
+  .loader-text {
+    font-family:var(--body); font-size:0.72rem; font-weight:500;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:rgba(255,255,255,0.3); animation:logoFade 0.5s 0.2s ease both;
+  }
 </style>
 </head>
 <body>
  
 <!-- ════════════════════════════════
+     LOADING SCREEN
+════════════════════════════════ -->
+<div class="page active" id="page-loading">
+  <img class="loader-logo" src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite" />
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-text">Loading…</div>
+</div>
+ 
+ 
+<!-- ════════════════════════════════
      PAGE 1 · LANDING  (Figma design)
 ════════════════════════════════ -->
-<div class="page active" id="page-landing">
+<div class="page" id="page-landing">
  
   <!-- top-right location picker -->
   <button class="location-btn" onclick="alert('Location selector coming soon')">
@@ -579,6 +611,13 @@ function animateCount(el, to) {
 }
  
 window.addEventListener('load', () => {
+  const sid = new URLSearchParams(window.location.search).get('s');
+ 
+  // Always show loading screen first, then route after a short delay
+  // so the user never sees a flash of the wrong page
+  const minLoadMs = sid ? 900 : 0; // participant gets a loader; presenter goes straight in
+  const start = Date.now();
+ 
   try {
     const app = firebase.initializeApp({
       apiKey:      "AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k",
@@ -587,14 +626,21 @@ window.addEventListener('load', () => {
       projectId:   "cognite-impact-tour",
     });
     db = firebase.database(app);
-    const sid = new URLSearchParams(window.location.search).get('s');
+  } catch(e) { console.error('Firebase:', e); }
+ 
+  const elapsed = Date.now() - start;
+  const delay = Math.max(0, minLoadMs - elapsed);
+ 
+  setTimeout(() => {
     if (sid) {
       sessionId = sid;
       renderProblems();
       goToPage('page-participant');
       initParticipant(sid);
+    } else {
+      goToPage('page-landing');
     }
-  } catch(e) { console.error('Firebase:', e); }
+  }, delay);
 });
  
 function goToPage(id) {
