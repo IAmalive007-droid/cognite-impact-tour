@@ -232,18 +232,104 @@
   .modal-confirm:hover { background:rgba(255,92,92,0.25); }
  
   /* ── PRESENTATION MODE ── */
-  #page-present { align-items:center; justify-content:center; background:linear-gradient(to bottom, #14161f, #3d425c); position:relative; }
-  .present-inner { position:relative; z-index:1; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; }
-  .present-stats { display:flex; gap:40px; margin-bottom:32px; align-items:center; }
-  .present-stat { text-align:center; }
-  .present-stat-num { font-family:var(--heading); font-size:2.8rem; font-weight:700; letter-spacing:-0.06em; color:var(--lavender); line-height:1; }
-  .present-stat-lbl { font-size:0.6rem; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--text3); margin-top:4px; font-family:var(--body); }
-  .present-divider { width:1px; height:48px; background:var(--bord2); }
-  .present-cloud { display:flex; flex-direction:column; gap:10px; width:min(700px,90vw); }
-  .present-empty { color:var(--text3); font-size:1rem; font-family:var(--body); }
-  .present-exit { position:absolute; top:20px; right:24px; font-family:var(--body); font-size:0.7rem; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--bord); background:transparent; color:var(--text3); cursor:pointer; transition:all 0.15s; }
-  .present-exit:hover { color:var(--text); border-color:var(--bord2); }
-  .present-top-label { font-size:0.6rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:var(--text3); margin-bottom:24px; font-family:var(--body); }
+  #page-present {
+    background: #0e1018;
+    flex-direction: column;
+    overflow: hidden;
+  }
+ 
+  /* top bar */
+  .present-topbar {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .present-topbar-left {
+    display: flex; align-items: center; gap: 20px;
+  }
+  .present-logo { height: 22px; width: auto; filter: brightness(0) invert(1); opacity: 0.5; }
+  .present-divider-v { width:1px; height:18px; background:rgba(255,255,255,0.1); }
+  .present-event-lbl {
+    font-family: var(--body); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+  .present-counter {
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .present-counter-num {
+    font-family: var(--heading); font-size: 1.4rem; font-weight: 700;
+    letter-spacing: -0.04em; color: var(--lavender);
+  }
+  .present-counter-lbl {
+    font-family: var(--body); font-size: 0.62rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+  }
+  .present-exit {
+    font-family: var(--body); font-size: 0.7rem; font-weight: 500;
+    padding: 6px 14px; border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent; color: rgba(255,255,255,0.3);
+    cursor: pointer; transition: all 0.15s; letter-spacing: 0.03em;
+    position: static; /* override any absolute */
+  }
+  .present-exit:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+ 
+  /* main content */
+  .present-inner {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 48px 64px; gap: 0; overflow: hidden;
+  }
+  .present-title-lbl {
+    font-family: var(--body); font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.2); margin-bottom: 28px;
+  }
+  .present-cloud {
+    display: flex; flex-direction: column; gap: 8px;
+    width: min(760px, 90vw);
+  }
+  .present-empty {
+    font-family: var(--body); font-size: 0.9rem;
+    color: rgba(255,255,255,0.2); text-align: center;
+  }
+ 
+  /* present rows — clean minimal style */
+  .prow {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative; overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+    animation: prowIn 0.4s cubic-bezier(0.34,1.2,0.64,1) both;
+  }
+  @keyframes prowIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .prow-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    border-radius: 10px; opacity: 0.07;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .prow-rank {
+    font-family: var(--heading); font-size: 0.78rem; font-weight: 700;
+    width: 20px; text-align: center; flex-shrink: 0;
+    color: rgba(255,255,255,0.2); z-index: 1;
+  }
+  .prow-rank.gold   { color: #ffc845; }
+  .prow-rank.silver { color: #b0bec5; }
+  .prow-rank.bronze { color: #cd8c52; }
+  .prow-emoji { font-size: 1.1rem; flex-shrink: 0; z-index: 1; }
+  .prow-label {
+    font-family: var(--heading); font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    font-weight: 600; color: #fafafa; flex: 1; z-index: 1; letter-spacing: -0.01em;
+  }
+  .prow-count {
+    font-family: var(--heading); font-size: 1.3rem; font-weight: 700;
+    color: var(--lavender); min-width: 32px; text-align: right;
+    flex-shrink: 0; z-index: 1; letter-spacing: -0.04em;
+  }
  
   /* ════════════════════
      PAGE 4 — PARTICIPANT
@@ -486,16 +572,24 @@
      PAGE 5 · PRESENTATION MODE
 ════════════════════════════════ -->
 <div class="page" id="page-present">
-  <button class="present-exit" onclick="goToPage('page-dashboard')">✕ Exit</button>
-  <div class="present-inner">
-    <div class="present-stats">
-      <div class="present-stat">
-        <div class="present-stat-num" id="pres-resp">0</div>
-        <div class="present-stat-lbl">People Voted</div>
-      </div>
- 
+  <!-- top bar with exit — always on top -->
+  <div class="present-topbar">
+    <div class="present-topbar-left">
+      <img class="present-logo" src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite" />
+      <div class="present-divider-v"></div>
+      <span class="present-event-lbl">Mumbai Impact Tour · 2026</span>
     </div>
-    <div class="present-top-label">Live challenges from the room</div>
+    <div style="display:flex;align-items:center;gap:20px">
+      <div class="present-counter">
+        <span class="present-counter-num" id="pres-resp">0</span>
+        <span class="present-counter-lbl">People Voted</span>
+      </div>
+      <button class="present-exit" onclick="goToPage('page-dashboard')">✕ Exit</button>
+    </div>
+  </div>
+  <!-- main content -->
+  <div class="present-inner">
+    <div class="present-title-lbl">Live challenges from the room</div>
     <div class="present-cloud" id="pres-cloud">
       <div class="present-empty">Waiting for responses…</div>
     </div>
@@ -880,4 +974,3 @@ async function submitVote() {
 </script>
 </body>
 </html>
- 
