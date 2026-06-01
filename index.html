@@ -342,7 +342,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
       <div class="live-chip"><div class="live-dot"></div>Live</div>
       <button class="nav-btn" onclick="goToPage('page-qr')">Show QR</button>
       <button class="nav-btn" onclick="enterPresent()" style="color:#c47aff;border-color:rgba(180,100,255,.25)">⛶ Present</button>
-      <button class="nav-btn" onclick="goToPage('page-analytics')" style="color:var(--lavender);border-color:rgba(204,212,255,.25)">📊 Analytics</button>
+      <button class="nav-btn" onclick="goToAnalytics()" style="color:var(--lavender);border-color:rgba(204,212,255,.25)">📊 Analytics</button>
       <button class="nav-btn" onclick="exportCSV()" style="color:var(--green);border-color:rgba(39,196,134,.25)">↓ Export</button>
       <button class="nav-btn lav" onclick="onNewSession()">New Session</button>
     </div>
@@ -991,9 +991,6 @@ async function submitVote(){
   }
 }
  
-// wire analytics nav button
-document.querySelector('[onclick="goToPage(\'page-analytics\')"]')
-  ?.setAttribute('onclick',"goToAnalytics()");
 </script>
 </body>
 </html>
