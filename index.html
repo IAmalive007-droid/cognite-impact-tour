@@ -463,7 +463,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
  
     <!-- key insights -->
     <div class="ana-card">
-      <div class="ana-card-title">Key Insights</div>
+      <div class="ana-card-title">#1 Challenge Across All Sessions</div>
       <div class="insight-grid" id="ana-insights">
         <div class="ana-empty">Loading insights…</div>
       </div>
@@ -994,62 +994,50 @@ async function renderAnalytics(){
   document.getElementById('ana-sub').textContent =
     `${totalRespondents} respondents · ${totalSessions} session${totalSessions!==1?'s':''} · ${totalCompanies} companies`;
  
-  // Key Insights
+  // Top challenge showcase
   const sortedChallenges = PROBLEMS.map(p=>({...p,count:globalVotes[p.id]||0})).sort((a,b)=>b.count-a.count);
-  const topChallenge = sortedChallenges[0];
   const sortedDesig = Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
-  const topDesig = sortedDesig[0];
   const sortedComp = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
-  const insights = [];
+  const topChallenge = sortedChallenges[0];
  
-  if(topChallenge?.count > 0){
+  if(!topChallenge || topChallenge.count === 0){
+    document.getElementById('ana-insights').innerHTML = '<div class="ana-empty">No votes yet — run a session first</div>';
+  } else {
     const pct = Math.round(topChallenge.count/(totalVotes||1)*100);
-    insights.push({ icon:topChallenge.emoji, stat:`${pct}%`,
-      text:`of all votes point to <strong>"${topChallenge.label}"</strong> as the top challenge across all sessions`,
-      source:`${topChallenge.count} votes across ${totalSessions} session${totalSessions!==1?'s':''}` });
-  }
-  if(topDesig){
-    const [desig, count] = topDesig;
-    const topCh = Object.entries(desigChallengeMap[desig]||{}).sort((a,b)=>b[1]-a[1])[0];
-    const prob = topCh ? PROBLEMS.find(p=>p.id===topCh[0]) : null;
-    insights.push({ icon:'👤', stat:`${count}`,
-      text:`<strong>${desig}${count!==1?'s':''}</strong> responded — their #1 concern is <strong>${prob?'"'+prob.label+'"':'varied challenges'}</strong>`,
-      source:`Most represented designation across all sessions` });
-  }
-  if(sortedComp.length > 0){
-    const [topCo, topCoCount] = sortedComp[0];
-    insights.push({ icon:'🏢', stat:`${topCoCount}`,
-      text:`respondents from <strong>${topCo}</strong> — the most represented company`,
-      source:`${sortedComp.length} companies total` });
-  }
-  Object.entries(desigChallengeMap)
-    .filter(([d,chMap]) => Object.values(chMap).reduce((a,b)=>a+b,0) >= 2)
-    .map(([d,chMap]) => {
-      const top = Object.entries(chMap).sort((a,b)=>b[1]-a[1])[0];
-      const prob = PROBLEMS.find(p=>p.id===top[0]);
-      const total = desigMap[d];
-      const pct = Math.round(top[1]/total*100);
-      return {desig:d, prob, count:top[1], total, pct};
-    })
-    .sort((a,b)=>b.pct-a.pct).slice(0,3)
-    .forEach(ins => {
-      if(!ins.prob) return;
-      insights.push({ icon:ins.prob.emoji, stat:`${ins.pct}%`,
-        text:`of <strong>${ins.desig}s</strong> flagged <strong>"${ins.prob.label}"</strong> as a key challenge`,
-        source:`${ins.count} out of ${ins.total} ${ins.desig}s` });
-    });
- 
-  document.getElementById('ana-insights').innerHTML = insights.length===0
-    ? '<div class="ana-empty">Not enough data for insights yet</div>'
-    : insights.map(ins=>`
-      <div class="insight-card">
-        <div class="insight-icon">${ins.icon}</div>
-        <div class="insight-body">
-          <div class="insight-stat">${ins.stat}</div>
-          <div class="insight-text">${ins.text}</div>
-          <div class="insight-source">${ins.source}</div>
+    // top 3 challenges for context
+    const top3 = sortedChallenges.filter(p=>p.count>0).slice(0,3);
+    const maxCount = top3[0]?.count || 1;
+    document.getElementById('ana-insights').innerHTML = `
+      <div style="text-align:center;padding:24px 16px 16px;">
+        <div style="font-size:4.5rem;margin-bottom:16px">${topChallenge.emoji}</div>
+        <div style="font-family:var(--heading);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;
+          color:#fafafa;letter-spacing:-.03em;line-height:1.2;margin-bottom:10px">
+          "${topChallenge.label}"
         </div>
-      </div>`).join('');
+        <div style="font-family:var(--body);font-size:.95rem;color:var(--text2);margin-bottom:6px">
+          is the <strong style="color:var(--lavender)">#1 challenge</strong> across all sessions
+        </div>
+        <div style="font-family:var(--body);font-size:.78rem;color:var(--text3)">
+          ${topChallenge.count} vote${topChallenge.count!==1?'s':''} · ${pct}% of all votes · ${totalSessions} session${totalSessions!==1?'s':''}
+        </div>
+      </div>
+      ${top3.length > 1 ? `
+      <div style="border-top:1px solid var(--bord);padding:16px 8px 8px;display:flex;flex-direction:column;gap:8px;">
+        ${top3.map((p,i)=>{
+          const barW = Math.round(p.count/maxCount*100);
+          const medals = ['🥇','🥈','🥉'];
+          return `<div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:.85rem;width:20px;text-align:center">${medals[i]}</span>
+            <span style="font-size:.82rem;font-family:var(--body);color:var(--text2);flex:1">${p.emoji} ${p.label}</span>
+            <div style="width:100px;height:4px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden">
+              <div style="height:100%;width:${barW}%;background:var(--lavender);border-radius:100px"></div>
+            </div>
+            <span style="font-size:.78rem;font-family:var(--heading);font-weight:700;color:var(--lavender);min-width:20px;text-align:right">${p.count}</span>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+    `;
+  }
  
   // Challenge bars
   const maxV = sortedChallenges[0]?.count||1;
