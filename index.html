@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root {
@@ -494,6 +495,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
       </div>
     </div>
  
+    <!-- storage files -->
+    <div class="ana-card">
+      <div class="ana-card-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Session JSON Files</span>
+        <span style="font-size:.7rem;color:var(--text3);font-weight:400">Firebase Storage</span>
+      </div>
+      <div id="ana-storage-files"><div class="ana-empty">Loading files…</div></div>
+    </div>
+ 
     <!-- respondents table -->
     <div class="ana-card">
       <div class="ana-card-title">All Respondents</div>
@@ -621,7 +631,7 @@ const COLORS=[
 ];
 const BAR_COLORS=['#ccd4ff','#ff8c5a','#27c486','#c47aff','#ffc845','#00c8dc','#ff6090','#7affa8'];
  
-let db=null, sessionId=null, sessionName=null, listener=null;
+let db=null, storage=null, sessionId=null, sessionName=null, listener=null;
 let selected=new Set(), lastVotes={}, lastResponses=0, lastRespondents=[];
  
 // ── UTILS ──
@@ -658,10 +668,53 @@ function initFirebase() {
       authDomain:'cognite-impact-tour.firebaseapp.com',
       databaseURL:'https://cognite-impact-tour-default-rtdb.firebaseio.com',
       projectId:'cognite-impact-tour',
+      storageBucket:'cognite-impact-tour.firebasestorage.app',
     });
     db = firebase.database(app);
+    storage = firebase.storage(app);
     return true;
   } catch(e) { console.error('Firebase init failed:', e); return false; }
+}
+ 
+// ── SAVE SESSION JSON TO STORAGE ──
+async function saveSessionJSON(sid, sname, data) {
+  if (!storage) return;
+  try {
+    const payload = {
+      sessionId: sid,
+      sessionName: sname,
+      exportedAt: new Date().toISOString(),
+      meta: {
+        responses: data.meta?.responses || 0,
+        created: data.meta?.created || null,
+      },
+      votes: data.votes || {},
+      challengeBreakdown: PROBLEMS.map(p => ({
+        id: p.id,
+        label: p.label,
+        emoji: p.emoji,
+        votes: (data.votes || {})[p.id] || 0,
+      })),
+      submissions: Object.entries(data.submissions || {}).map(([k, v]) => ({
+        id: k,
+        designation: v.designation || '',
+        company: v.company || '',
+        challenges: (v.challenges || []).map(id => {
+          const p = PROBLEMS.find(x => x.id === id);
+          return p ? { id, label: p.label, emoji: p.emoji } : { id };
+        }),
+        submittedAt: v.ts ? new Date(v.ts).toISOString() : null,
+      })),
+    };
+ 
+    const json = JSON.stringify(payload, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const ref = storage.ref('sessions/' + sid + '.json');
+    await ref.put(blob);
+    console.log('Session JSON saved to Storage:', sid + '.json');
+  } catch(e) {
+    console.warn('Could not save session JSON to Storage:', e);
+  }
 }
  
 window.addEventListener('load', async () => {
@@ -760,6 +813,9 @@ function generateQR(){
     name: name,
     created: new Date().toISOString(),
     responses: 0
+  }).then(() => {
+    // Save initial empty JSON to Storage
+    saveSessionJSON(sessionId, name, { meta: { name, created: new Date().toISOString(), responses: 0 }, votes: {}, submissions: {} });
   });
  
   localStorage.setItem('presenterSession', sessionId);
@@ -791,6 +847,7 @@ function onNewSession(){
 }
  
 // ── FIREBASE LISTENER ──
+let _saveTimer = null;
 function startListening(sid){
   if(!db)return;
   if(listener)listener();
@@ -799,7 +856,6 @@ function startListening(sid){
     const d=snap.val()||{};
     lastVotes=d.votes||{};
     lastResponses=d.meta?.responses||0;
-    // collect respondents from submissions sub-tree
     lastRespondents=[];
     if(d.submissions){
       Object.entries(d.submissions).forEach(([k,v])=>{
@@ -809,6 +865,11 @@ function startListening(sid){
     }
     renderDash(lastVotes,lastResponses);
     renderPresent(lastVotes,lastResponses);
+    // Debounce JSON save — write 4s after last change to avoid hammering Storage
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(() => {
+      saveSessionJSON(sid, sessionName || sid, d);
+    }, 4000);
   });
   listener=()=>ref.off('value',fn);
 }
@@ -880,145 +941,146 @@ async function goToAnalytics(){
 }
  
 async function renderAnalytics(){
-  if(!db) return;
+  if(!db) initFirebase();
+  if(!storage) { document.getElementById('ana-sub').textContent='Storage not available.'; return; }
  
-  // ── FETCH ALL SESSIONS ──
-  let allSessions = {};
+  document.getElementById('ana-sub').textContent = 'Loading session files…';
+ 
+  // ── STEP 1: List all JSON files from Storage ──
+  let storageItems = [];
   try {
-    const snap = await db.ref('sessions').once('value');
-    allSessions = snap.val() || {};
+    const list = await storage.ref('sessions').listAll();
+    storageItems = list.items;
   } catch(e) {
-    document.getElementById('ana-sub').textContent = 'Could not load data. Check your connection.';
+    document.getElementById('ana-sub').textContent = 'Could not load files. Check your connection.';
+    document.getElementById('ana-storage-files').innerHTML = '<div class="ana-empty">Could not list storage files</div>';
     return;
   }
  
-  // ── AGGREGATE DATA ──
+  if(storageItems.length === 0) {
+    document.getElementById('ana-sub').textContent = 'No session files found yet.';
+    document.getElementById('ana-insights').innerHTML = '<div class="ana-empty">Run a session first — files appear after votes come in</div>';
+    document.getElementById('ana-storage-files').innerHTML = '<div class="ana-empty">No files yet — they appear after first vote</div>';
+    return;
+  }
+ 
+  // ── STEP 2: Download all JSONs in parallel ──
+  document.getElementById('ana-sub').textContent = `Loading ${storageItems.length} session file${storageItems.length!==1?'s':''}…`;
+ 
+  const fileResults = await Promise.allSettled(
+    storageItems.map(async ref => {
+      const url = await ref.getDownloadURL();
+      const res = await fetch(url);
+      const json = await res.json();
+      return { ref, url, json };
+    })
+  );
+ 
+  const sessions = fileResults
+    .filter(r => r.status === 'fulfilled')
+    .map(r => r.value);
+ 
+  // ── STEP 3: Aggregate across all sessions ──
   const sessionList = [];
   const allRespondents = [];
-  const globalVotes = {}; // challengeId → count
-  const desigMap = {};    // designation → count
-  const compMap = {};     // company → count
-  // per-challenge, per-designation: who said what
-  const desigChallengeMap = {}; // designation → {challengeId: count}
+  const globalVotes = {};
+  const desigMap = {};
+  const compMap = {};
+  const desigChallengeMap = {};
  
   PROBLEMS.forEach(p => globalVotes[p.id] = 0);
  
-  Object.entries(allSessions).forEach(([sid, sdata]) => {
-    if(!sdata || !sdata.meta) return;
-    const name = sdata.meta.name || sid;
-    const responses = sdata.meta.responses || 0;
-    const created = sdata.meta.created || null;
-    const votes = sdata.votes || {};
-    const submissions = sdata.submissions || {};
+  sessions.forEach(({ ref, url, json }) => {
+    const name = json.sessionName || json.sessionId || ref.name.replace('.json','');
+    const responses = json.meta?.responses || 0;
+    const created = json.meta?.created || null;
  
     // Accumulate votes
-    Object.entries(votes).forEach(([cid, cnt]) => {
-      if(globalVotes[cid] !== undefined) globalVotes[cid] += cnt;
+    (json.challengeBreakdown || []).forEach(c => {
+      if(globalVotes[c.id] !== undefined) globalVotes[c.id] += (c.votes || 0);
     });
  
     // Accumulate submissions
-    Object.entries(submissions).forEach(([key, r]) => {
-      allRespondents.push({...r, sessionName: name, sessionId: sid});
-      if(r.designation) {
-        desigMap[r.designation] = (desigMap[r.designation]||0) + 1;
-        // track which challenges each designation picked
-        if(!desigChallengeMap[r.designation]) desigChallengeMap[r.designation] = {};
-        (r.challenges||[]).forEach(cid => {
-          desigChallengeMap[r.designation][cid] = (desigChallengeMap[r.designation][cid]||0) + 1;
+    (json.submissions || []).forEach(r => {
+      allRespondents.push({ ...r, sessionName: name, sessionId: json.sessionId });
+      const desig = r.designation || '';
+      const comp = r.company || '';
+      if(desig) {
+        desigMap[desig] = (desigMap[desig]||0) + 1;
+        if(!desigChallengeMap[desig]) desigChallengeMap[desig] = {};
+        (r.challenges||[]).forEach(ch => {
+          const cid = ch.id || ch;
+          desigChallengeMap[desig][cid] = (desigChallengeMap[desig][cid]||0) + 1;
         });
       }
-      if(r.company) compMap[r.company] = (compMap[r.company]||0) + 1;
+      if(comp) compMap[comp] = (compMap[comp]||0) + 1;
     });
  
-    sessionList.push({ sid, name, responses, created });
+    sessionList.push({ name, responses, created, url, fileName: ref.name });
   });
  
-  // Sort respondents by time
-  allRespondents.sort((a,b) => (a.ts||0) - (b.ts||0));
+  allRespondents.sort((a,b) => (a.submittedAt ? new Date(a.submittedAt) : 0) - (b.submittedAt ? new Date(b.submittedAt) : 0));
  
   const totalRespondents = allRespondents.length;
   const totalSessions = sessionList.length;
   const totalCompanies = Object.keys(compMap).length;
   const totalVotes = Object.values(globalVotes).reduce((a,b)=>a+b,0);
  
-  // Update stat cards
+  // ── STEP 4: Render stats ──
   animateCount(document.getElementById('ana-total-resp'), totalRespondents);
   animateCount(document.getElementById('ana-total-sessions'), totalSessions);
   animateCount(document.getElementById('ana-companies'), totalCompanies);
   document.getElementById('ana-sub').textContent =
     `${totalRespondents} respondents · ${totalSessions} session${totalSessions!==1?'s':''} · ${totalCompanies} companies`;
  
-  // ── INSIGHTS ──
+  // ── STEP 5: Key Insights ──
   const sortedChallenges = PROBLEMS.map(p=>({...p,count:globalVotes[p.id]||0})).sort((a,b)=>b.count-a.count);
   const topChallenge = sortedChallenges[0];
   const sortedDesig = Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
   const topDesig = sortedDesig[0];
   const sortedComp = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
- 
   const insights = [];
  
-  // Insight 1: Top challenge overall
-  if(topChallenge && topChallenge.count > 0) {
+  if(topChallenge?.count > 0) {
     const pct = Math.round(topChallenge.count / (totalVotes||1) * 100);
-    insights.push({
-      icon: topChallenge.emoji,
-      stat: `${pct}%`,
-      text: `of all votes point to <strong>"${topChallenge.label}"</strong> as the top challenge across all sessions`,
-      source: `${topChallenge.count} votes across ${totalSessions} session${totalSessions!==1?'s':''}`
-    });
+    insights.push({ icon:topChallenge.emoji, stat:`${pct}%`,
+      text:`of all votes point to <strong>"${topChallenge.label}"</strong> as the top challenge across all sessions`,
+      source:`${topChallenge.count} votes across ${totalSessions} session${totalSessions!==1?'s':''}` });
   }
- 
-  // Insight 2: Top designation + their top concern
   if(topDesig) {
     const [desig, count] = topDesig;
-    const desigChallenges = desigChallengeMap[desig] || {};
-    const topDesigChallenge = Object.entries(desigChallenges).sort((a,b)=>b[1]-a[1])[0];
-    const prob = topDesigChallenge ? PROBLEMS.find(p=>p.id===topDesigChallenge[0]) : null;
-    insights.push({
-      icon: '👤',
-      stat: `${count}`,
-      text: `<strong>${desig}${count!==1?'s':''}</strong> responded — their #1 concern is <strong>${prob ? '"'+prob.label+'"' : 'varied challenges'}</strong>`,
-      source: `Most represented designation across all sessions`
-    });
+    const topCh = Object.entries(desigChallengeMap[desig]||{}).sort((a,b)=>b[1]-a[1])[0];
+    const prob = topCh ? PROBLEMS.find(p=>p.id===topCh[0]) : null;
+    insights.push({ icon:'👤', stat:`${count}`,
+      text:`<strong>${desig}${count!==1?'s':''}</strong> responded — their #1 concern is <strong>${prob?'"'+prob.label+'"':'varied challenges'}</strong>`,
+      source:`Most represented designation across all sessions` });
   }
- 
-  // Insight 3: Most represented company
   if(sortedComp.length > 0) {
     const [topCo, topCoCount] = sortedComp[0];
-    insights.push({
-      icon: '🏢',
-      stat: `${topCoCount}`,
-      text: `respondents from <strong>${topCo}</strong> — the most represented company`,
-      source: `${sortedComp.length} companies total`
-    });
+    insights.push({ icon:'🏢', stat:`${topCoCount}`,
+      text:`respondents from <strong>${topCo}</strong> — the most represented company`,
+      source:`${sortedComp.length} companies total` });
   }
- 
-  // Insight 4: Per-designation top challenge breakdown
-  const desigInsights = Object.entries(desigChallengeMap)
+  Object.entries(desigChallengeMap)
     .filter(([d, chMap]) => Object.values(chMap).reduce((a,b)=>a+b,0) >= 2)
     .map(([d, chMap]) => {
       const top = Object.entries(chMap).sort((a,b)=>b[1]-a[1])[0];
       const prob = PROBLEMS.find(p=>p.id===top[0]);
       const total = desigMap[d];
       const pct = Math.round(top[1]/total*100);
-      return { desig: d, prob, count: top[1], total, pct };
+      return { desig:d, prob, count:top[1], total, pct };
     })
-    .sort((a,b) => b.pct - a.pct)
-    .slice(0, 3);
- 
-  desigInsights.forEach(ins => {
-    if(!ins.prob) return;
-    insights.push({
-      icon: ins.prob.emoji,
-      stat: `${ins.pct}%`,
-      text: `of <strong>${ins.desig}s</strong> flagged <strong>"${ins.prob.label}"</strong> as a key challenge`,
-      source: `${ins.count} out of ${ins.total} ${ins.desig}s`
+    .sort((a,b)=>b.pct-a.pct).slice(0,3)
+    .forEach(ins => {
+      if(!ins.prob) return;
+      insights.push({ icon:ins.prob.emoji, stat:`${ins.pct}%`,
+        text:`of <strong>${ins.desig}s</strong> flagged <strong>"${ins.prob.label}"</strong> as a key challenge`,
+        source:`${ins.count} out of ${ins.total} ${ins.desig}s` });
     });
-  });
  
-  document.getElementById('ana-insights').innerHTML = insights.length === 0
+  document.getElementById('ana-insights').innerHTML = insights.length===0
     ? '<div class="ana-empty">Not enough data for insights yet</div>'
-    : insights.map(ins => `
+    : insights.map(ins=>`
       <div class="insight-card">
         <div class="insight-icon">${ins.icon}</div>
         <div class="insight-body">
@@ -1028,54 +1090,49 @@ async function renderAnalytics(){
         </div>
       </div>`).join('');
  
-  // ── CHALLENGE BARS ──
-  const max = sortedChallenges[0]?.count || 1;
+  // ── STEP 6: Challenge bars ──
+  const maxV = sortedChallenges[0]?.count||1;
   document.getElementById('ana-bars').innerHTML = !sortedChallenges.some(p=>p.count>0)
     ? '<div class="ana-empty">No votes yet</div>'
-    : sortedChallenges.map((p,i) => {
-      const pct = Math.round(p.count/(totalVotes||1)*100);
-      const barW = Math.round(p.count/max*100);
+    : sortedChallenges.map((p,i)=>{
+      const pct=Math.round(p.count/(totalVotes||1)*100);
+      const barW=Math.round(p.count/maxV*100);
       return `<div class="ana-bar-row">
         <span class="ana-bar-emoji">${p.emoji}</span>
         <span class="ana-bar-label">${p.label}</span>
         <div class="ana-bar-track"><div class="ana-bar-fill" style="width:${barW}%;background:${BAR_COLORS[i%BAR_COLORS.length]}"></div></div>
-        <div class="ana-bar-right">
-          <span class="ana-bar-count">${p.count}</span>
-          <span class="ana-bar-pct">${pct}%</span>
-        </div>
+        <div class="ana-bar-right"><span class="ana-bar-count">${p.count}</span><span class="ana-bar-pct">${pct}%</span></div>
       </div>`;
     }).join('');
  
-  // ── DESIGNATION CHIPS ──
-  const desigSorted = Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('ana-desig').innerHTML = desigSorted.length===0
+  // ── STEP 7: Designation chips ──
+  document.getElementById('ana-desig').innerHTML = sortedDesig.length===0
     ? '<div class="ana-empty">No data yet</div>'
-    : desigSorted.map(([name,count]) => {
+    : sortedDesig.map(([name,count])=>{
       const topCh = Object.entries(desigChallengeMap[name]||{}).sort((a,b)=>b[1]-a[1])[0];
       const prob = topCh ? PROBLEMS.find(p=>p.id===topCh[0]) : null;
       return `<div class="ana-desig-chip" title="${prob?'Top concern: '+prob.label:''}">
         <div class="ana-desig-name">${name}</div>
         <div class="ana-desig-count">${count}</div>
-        <div class="ana-desig-lbl">respondent${count!==1?'s':''} · ${prob?prob.emoji+' top concern':''}</div>
+        <div class="ana-desig-lbl">respondent${count!==1?'s':''}${prob?' · '+prob.emoji:''}</div>
       </div>`;
     }).join('');
  
-  // ── COMPANY CHIPS ──
-  const compSorted = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('ana-companies-grid').innerHTML = compSorted.length===0
+  // ── STEP 8: Company chips ──
+  document.getElementById('ana-companies-grid').innerHTML = sortedComp.length===0
     ? '<div class="ana-empty">No data yet</div>'
-    : compSorted.map(([name,count]) => `
+    : sortedComp.map(([name,count])=>`
       <div class="ana-desig-chip">
         <div class="ana-desig-name">${name}</div>
         <div class="ana-desig-count">${count}</div>
         <div class="ana-desig-lbl">respondent${count!==1?'s':''}</div>
       </div>`).join('');
  
-  // ── SESSIONS LIST ──
-  const sessionsSorted = sessionList.sort((a,b) => new Date(b.created||0) - new Date(a.created||0));
+  // ── STEP 9: Sessions list ──
+  const sessionsSorted = sessionList.sort((a,b)=>new Date(b.created||0)-new Date(a.created||0));
   document.getElementById('ana-sessions-list').innerHTML = sessionsSorted.length===0
     ? '<div class="ana-empty">No sessions yet</div>'
-    : sessionsSorted.map(s => {
+    : sessionsSorted.map(s=>{
       const date = s.created ? new Date(s.created).toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'}) : '—';
       return `<div class="session-row">
         <div class="session-row-name">${s.name}</div>
@@ -1087,16 +1144,31 @@ async function renderAnalytics(){
       </div>`;
     }).join('');
  
-  // ── RESPONDENTS TABLE ──
+  // ── STEP 10: Storage files with download links ──
+  document.getElementById('ana-storage-files').innerHTML = sessions.map(({ref, url, json})=>{
+    const name = json.sessionName || ref.name.replace('.json','');
+    return `<div class="session-row">
+      <i class="ti ti-file" style="font-size:16px;color:var(--text3);flex-shrink:0"></i>
+      <div class="session-row-name" style="font-family:monospace;font-size:.75rem">${ref.name}</div>
+      <div class="session-row-date">${name}</div>
+      <a href="${url}" download="${ref.name}"
+        style="font-family:var(--body);font-size:.72rem;font-weight:600;color:var(--lavender);
+        text-decoration:none;padding:5px 12px;border:1px solid rgba(204,212,255,.25);
+        border-radius:6px;white-space:nowrap;flex-shrink:0">↓ Download</a>
+    </div>`;
+  }).join('');
+ 
+  // ── STEP 11: Respondents table ──
   document.getElementById('ana-table-body').innerHTML = allRespondents.length===0
     ? `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:32px">No responses yet</td></tr>`
-    : allRespondents.map((r,i) => {
-      const challenges=(r.challenges||[]).map(id=>{
+    : allRespondents.map((r,i)=>{
+      const challenges=(r.challenges||[]).map(ch=>{
+        const id = ch.id||ch;
         const p=PROBLEMS.find(x=>x.id===id);
-        const col=COLORS[PROBLEMS.indexOf(p)%COLORS.length];
+        const col=p?COLORS[PROBLEMS.indexOf(p)%COLORS.length]:COLORS[0];
         return p?`<span class="ana-tag" style="background:${col.bg};color:${col.c}">${p.emoji} ${p.label}</span>`:'';
       }).join('');
-      const time = r.ts ? new Date(r.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
+      const time = r.submittedAt ? new Date(r.submittedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       return `<tr>
         <td style="color:var(--text3)">${i+1}</td>
         <td style="color:var(--text3);font-size:.72rem">${r.sessionName||'—'}</td>
@@ -1107,6 +1179,7 @@ async function renderAnalytics(){
       </tr>`;
     }).join('');
 }
+ 
  
 // ── RESET ──
 function confirmReset(){document.getElementById('reset-modal').classList.add('show');}
