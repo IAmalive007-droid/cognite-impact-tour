@@ -687,6 +687,11 @@ window.addEventListener('load', async () => {
       new QRCode(canvas,{text:url,width:220,height:220,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
       startListening(saved);
     }
+    // Allow direct analytics access via ?view=analytics
+    if (new URLSearchParams(window.location.search).get('view') === 'analytics') {
+      goToAnalytics();
+      return;
+    }
     return; // landing already visible, nothing else to do
   }
  
@@ -869,6 +874,8 @@ async function goToAnalytics(){
   goToPage('page-analytics');
   document.getElementById('ana-sub').textContent = 'Loading all session data…';
   document.getElementById('ana-insights').innerHTML = '<div class="ana-empty">Loading insights…</div>';
+  // ensure Firebase is ready regardless of how user got here
+  if (!db) initFirebase();
   await renderAnalytics();
 }
  
