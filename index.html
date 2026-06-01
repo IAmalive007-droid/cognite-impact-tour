@@ -283,6 +283,33 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
   .dash-nav{padding:0 16px;}
   .ana-nav{padding:0 16px;}
 }
+ 
+  /* ── ANALYTICS EXTRAS ── */
+  .ana-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+  .ana-tab { font-family:var(--body); font-size:.72rem; font-weight:600; padding:6px 14px; border-radius:100px; border:1px solid var(--bord); background:transparent; color:var(--text3); cursor:pointer; transition:all .15s; }
+  .ana-tab.active { background:rgba(204,212,255,.12); border-color:rgba(204,212,255,.3); color:var(--lavender); }
+ 
+  /* insight cards */
+  .insight-grid { display:flex; flex-direction:column; gap:10px; }
+  .insight-card {
+    background:rgba(255,255,255,.04); border:1px solid var(--bord);
+    border-radius:12px; padding:18px 22px;
+    display:flex; align-items:flex-start; gap:16px;
+  }
+  .insight-icon { font-size:1.6rem; flex-shrink:0; margin-top:2px; }
+  .insight-body { flex:1; }
+  .insight-stat { font-family:var(--heading); font-size:1.6rem; font-weight:700; letter-spacing:-.04em; color:var(--lavender); line-height:1; margin-bottom:4px; }
+  .insight-text { font-family:var(--body); font-size:.88rem; color:var(--text2); line-height:1.6; }
+  .insight-text strong { color:var(--text); font-weight:600; }
+  .insight-source { font-family:var(--body); font-size:.65rem; color:var(--text3); margin-top:6px; letter-spacing:.04em; }
+ 
+  /* session list */
+  .session-list { display:flex; flex-direction:column; gap:8px; }
+  .session-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:rgba(255,255,255,.04); border:1px solid var(--bord); border-radius:10px; }
+  .session-row-name { font-family:var(--heading); font-size:.9rem; font-weight:600; color:var(--text); flex:1; }
+  .session-row-date { font-family:var(--body); font-size:.72rem; color:var(--text3); }
+  .session-row-count { font-family:var(--heading); font-size:1rem; font-weight:700; color:var(--lavender); min-width:32px; text-align:right; }
+  .session-row-lbl { font-family:var(--body); font-size:.65rem; color:var(--text3); }
 </style>
 </head>
 <body>
@@ -412,40 +439,61 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
   </nav>
   <div class="ana-body">
     <div>
-      <div class="ana-eyebrow">Session Insights</div>
-      <div class="ana-title" id="ana-title">Analytics</div>
-      <div class="ana-sub" id="ana-sub">Loading session data…</div>
+      <div class="ana-eyebrow">Impact Tour · Cross-Session Analytics</div>
+      <div class="ana-title">All Sessions Overview</div>
+      <div class="ana-sub" id="ana-sub">Loading all session data…</div>
     </div>
+ 
     <!-- stat cards -->
     <div class="ana-stats">
       <div class="ana-stat">
         <div class="ana-stat-num" id="ana-total-resp">0</div>
-        <div class="ana-stat-lbl">People Voted</div>
+        <div class="ana-stat-lbl">Total Respondents</div>
       </div>
       <div class="ana-stat">
-        <div class="ana-stat-num" id="ana-total-votes">0</div>
-        <div class="ana-stat-lbl">Total Votes Cast</div>
+        <div class="ana-stat-num" id="ana-total-sessions">0</div>
+        <div class="ana-stat-lbl">Sessions</div>
       </div>
       <div class="ana-stat">
         <div class="ana-stat-num" id="ana-companies">0</div>
         <div class="ana-stat-lbl">Companies</div>
       </div>
     </div>
+ 
+    <!-- key insights -->
+    <div class="ana-card">
+      <div class="ana-card-title">Key Insights</div>
+      <div class="insight-grid" id="ana-insights">
+        <div class="ana-empty">Loading insights…</div>
+      </div>
+    </div>
+ 
     <!-- challenge breakdown -->
     <div class="ana-card">
-      <div class="ana-card-title">Challenge Breakdown</div>
+      <div class="ana-card-title">Challenge Breakdown — All Sessions</div>
       <div id="ana-bars"></div>
     </div>
+ 
     <!-- designation breakdown -->
     <div class="ana-card">
       <div class="ana-card-title">By Designation</div>
       <div class="ana-desig-grid" id="ana-desig"></div>
     </div>
+ 
     <!-- company breakdown -->
     <div class="ana-card">
       <div class="ana-card-title">By Company</div>
       <div class="ana-desig-grid" id="ana-companies-grid"></div>
     </div>
+ 
+    <!-- sessions list -->
+    <div class="ana-card">
+      <div class="ana-card-title">Sessions</div>
+      <div class="session-list" id="ana-sessions-list">
+        <div class="ana-empty">Loading sessions…</div>
+      </div>
+    </div>
+ 
     <!-- respondents table -->
     <div class="ana-card">
       <div class="ana-card-title">All Respondents</div>
@@ -454,10 +502,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
           <thead>
             <tr>
               <th>#</th>
+              <th>Session</th>
               <th>Designation</th>
               <th>Company</th>
               <th>Challenges Selected</th>
-              <th>Submitted</th>
+              <th>Time</th>
             </tr>
           </thead>
           <tbody id="ana-table-body"></tbody>
@@ -816,27 +865,169 @@ function renderPresent(votes,responses){
 }
  
 // ── ANALYTICS ──
-function goToAnalytics(){
+async function goToAnalytics(){
   goToPage('page-analytics');
-  renderAnalytics();
+  document.getElementById('ana-sub').textContent = 'Loading all session data…';
+  document.getElementById('ana-insights').innerHTML = '<div class="ana-empty">Loading insights…</div>';
+  await renderAnalytics();
 }
-function renderAnalytics(){
-  const votes=lastVotes, responses=lastResponses, respondents=lastRespondents;
-  const totalVotes=Object.values(votes).reduce((a,b)=>a+b,0);
-  const companies=new Set(respondents.map(r=>r.company).filter(Boolean));
-  animateCount(document.getElementById('ana-total-resp'),responses);
-  animateCount(document.getElementById('ana-total-votes'),totalVotes);
-  animateCount(document.getElementById('ana-companies'),companies.size);
  
-  // challenge bars
-  const sorted=PROBLEMS.map(p=>({...p,count:votes[p.id]||0})).sort((a,b)=>b.count-a.count);
-  const max=sorted[0]?.count||1;
-  const totalV=totalVotes||1;
-  document.getElementById('ana-bars').innerHTML = sorted.length===0||!sorted.some(p=>p.count>0)
+async function renderAnalytics(){
+  if(!db) return;
+ 
+  // ── FETCH ALL SESSIONS ──
+  let allSessions = {};
+  try {
+    const snap = await db.ref('sessions').once('value');
+    allSessions = snap.val() || {};
+  } catch(e) {
+    document.getElementById('ana-sub').textContent = 'Could not load data. Check your connection.';
+    return;
+  }
+ 
+  // ── AGGREGATE DATA ──
+  const sessionList = [];
+  const allRespondents = [];
+  const globalVotes = {}; // challengeId → count
+  const desigMap = {};    // designation → count
+  const compMap = {};     // company → count
+  // per-challenge, per-designation: who said what
+  const desigChallengeMap = {}; // designation → {challengeId: count}
+ 
+  PROBLEMS.forEach(p => globalVotes[p.id] = 0);
+ 
+  Object.entries(allSessions).forEach(([sid, sdata]) => {
+    if(!sdata || !sdata.meta) return;
+    const name = sdata.meta.name || sid;
+    const responses = sdata.meta.responses || 0;
+    const created = sdata.meta.created || null;
+    const votes = sdata.votes || {};
+    const submissions = sdata.submissions || {};
+ 
+    // Accumulate votes
+    Object.entries(votes).forEach(([cid, cnt]) => {
+      if(globalVotes[cid] !== undefined) globalVotes[cid] += cnt;
+    });
+ 
+    // Accumulate submissions
+    Object.entries(submissions).forEach(([key, r]) => {
+      allRespondents.push({...r, sessionName: name, sessionId: sid});
+      if(r.designation) {
+        desigMap[r.designation] = (desigMap[r.designation]||0) + 1;
+        // track which challenges each designation picked
+        if(!desigChallengeMap[r.designation]) desigChallengeMap[r.designation] = {};
+        (r.challenges||[]).forEach(cid => {
+          desigChallengeMap[r.designation][cid] = (desigChallengeMap[r.designation][cid]||0) + 1;
+        });
+      }
+      if(r.company) compMap[r.company] = (compMap[r.company]||0) + 1;
+    });
+ 
+    sessionList.push({ sid, name, responses, created });
+  });
+ 
+  // Sort respondents by time
+  allRespondents.sort((a,b) => (a.ts||0) - (b.ts||0));
+ 
+  const totalRespondents = allRespondents.length;
+  const totalSessions = sessionList.length;
+  const totalCompanies = Object.keys(compMap).length;
+  const totalVotes = Object.values(globalVotes).reduce((a,b)=>a+b,0);
+ 
+  // Update stat cards
+  animateCount(document.getElementById('ana-total-resp'), totalRespondents);
+  animateCount(document.getElementById('ana-total-sessions'), totalSessions);
+  animateCount(document.getElementById('ana-companies'), totalCompanies);
+  document.getElementById('ana-sub').textContent =
+    `${totalRespondents} respondents · ${totalSessions} session${totalSessions!==1?'s':''} · ${totalCompanies} companies`;
+ 
+  // ── INSIGHTS ──
+  const sortedChallenges = PROBLEMS.map(p=>({...p,count:globalVotes[p.id]||0})).sort((a,b)=>b.count-a.count);
+  const topChallenge = sortedChallenges[0];
+  const sortedDesig = Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
+  const topDesig = sortedDesig[0];
+  const sortedComp = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
+ 
+  const insights = [];
+ 
+  // Insight 1: Top challenge overall
+  if(topChallenge && topChallenge.count > 0) {
+    const pct = Math.round(topChallenge.count / (totalVotes||1) * 100);
+    insights.push({
+      icon: topChallenge.emoji,
+      stat: `${pct}%`,
+      text: `of all votes point to <strong>"${topChallenge.label}"</strong> as the top challenge across all sessions`,
+      source: `${topChallenge.count} votes across ${totalSessions} session${totalSessions!==1?'s':''}`
+    });
+  }
+ 
+  // Insight 2: Top designation + their top concern
+  if(topDesig) {
+    const [desig, count] = topDesig;
+    const desigChallenges = desigChallengeMap[desig] || {};
+    const topDesigChallenge = Object.entries(desigChallenges).sort((a,b)=>b[1]-a[1])[0];
+    const prob = topDesigChallenge ? PROBLEMS.find(p=>p.id===topDesigChallenge[0]) : null;
+    insights.push({
+      icon: '👤',
+      stat: `${count}`,
+      text: `<strong>${desig}${count!==1?'s':''}</strong> responded — their #1 concern is <strong>${prob ? '"'+prob.label+'"' : 'varied challenges'}</strong>`,
+      source: `Most represented designation across all sessions`
+    });
+  }
+ 
+  // Insight 3: Most represented company
+  if(sortedComp.length > 0) {
+    const [topCo, topCoCount] = sortedComp[0];
+    insights.push({
+      icon: '🏢',
+      stat: `${topCoCount}`,
+      text: `respondents from <strong>${topCo}</strong> — the most represented company`,
+      source: `${sortedComp.length} companies total`
+    });
+  }
+ 
+  // Insight 4: Per-designation top challenge breakdown
+  const desigInsights = Object.entries(desigChallengeMap)
+    .filter(([d, chMap]) => Object.values(chMap).reduce((a,b)=>a+b,0) >= 2)
+    .map(([d, chMap]) => {
+      const top = Object.entries(chMap).sort((a,b)=>b[1]-a[1])[0];
+      const prob = PROBLEMS.find(p=>p.id===top[0]);
+      const total = desigMap[d];
+      const pct = Math.round(top[1]/total*100);
+      return { desig: d, prob, count: top[1], total, pct };
+    })
+    .sort((a,b) => b.pct - a.pct)
+    .slice(0, 3);
+ 
+  desigInsights.forEach(ins => {
+    if(!ins.prob) return;
+    insights.push({
+      icon: ins.prob.emoji,
+      stat: `${ins.pct}%`,
+      text: `of <strong>${ins.desig}s</strong> flagged <strong>"${ins.prob.label}"</strong> as a key challenge`,
+      source: `${ins.count} out of ${ins.total} ${ins.desig}s`
+    });
+  });
+ 
+  document.getElementById('ana-insights').innerHTML = insights.length === 0
+    ? '<div class="ana-empty">Not enough data for insights yet</div>'
+    : insights.map(ins => `
+      <div class="insight-card">
+        <div class="insight-icon">${ins.icon}</div>
+        <div class="insight-body">
+          <div class="insight-stat">${ins.stat}</div>
+          <div class="insight-text">${ins.text}</div>
+          <div class="insight-source">${ins.source}</div>
+        </div>
+      </div>`).join('');
+ 
+  // ── CHALLENGE BARS ──
+  const max = sortedChallenges[0]?.count || 1;
+  document.getElementById('ana-bars').innerHTML = !sortedChallenges.some(p=>p.count>0)
     ? '<div class="ana-empty">No votes yet</div>'
-    : sorted.map((p,i)=>{
-      const pct=Math.round(p.count/totalV*100);
-      const barW=Math.round(p.count/max*100);
+    : sortedChallenges.map((p,i) => {
+      const pct = Math.round(p.count/(totalVotes||1)*100);
+      const barW = Math.round(p.count/max*100);
       return `<div class="ana-bar-row">
         <span class="ana-bar-emoji">${p.emoji}</span>
         <span class="ana-bar-label">${p.label}</span>
@@ -848,44 +1039,60 @@ function renderAnalytics(){
       </div>`;
     }).join('');
  
-  // designation breakdown
-  const desigMap={};
-  respondents.forEach(r=>{ if(r.designation){ desigMap[r.designation]=(desigMap[r.designation]||0)+1; } });
-  const desigSorted=Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
+  // ── DESIGNATION CHIPS ──
+  const desigSorted = Object.entries(desigMap).sort((a,b)=>b[1]-a[1]);
   document.getElementById('ana-desig').innerHTML = desigSorted.length===0
     ? '<div class="ana-empty">No data yet</div>'
-    : desigSorted.map(([name,count])=>`
-      <div class="ana-desig-chip">
+    : desigSorted.map(([name,count]) => {
+      const topCh = Object.entries(desigChallengeMap[name]||{}).sort((a,b)=>b[1]-a[1])[0];
+      const prob = topCh ? PROBLEMS.find(p=>p.id===topCh[0]) : null;
+      return `<div class="ana-desig-chip" title="${prob?'Top concern: '+prob.label:''}">
         <div class="ana-desig-name">${name}</div>
         <div class="ana-desig-count">${count}</div>
-        <div class="ana-desig-lbl">respondent${count!==1?'s':''}</div>
-      </div>`).join('');
+        <div class="ana-desig-lbl">respondent${count!==1?'s':''} · ${prob?prob.emoji+' top concern':''}</div>
+      </div>`;
+    }).join('');
  
-  // company breakdown
-  const compMap={};
-  respondents.forEach(r=>{ if(r.company){ compMap[r.company]=(compMap[r.company]||0)+1; } });
-  const compSorted=Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
+  // ── COMPANY CHIPS ──
+  const compSorted = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
   document.getElementById('ana-companies-grid').innerHTML = compSorted.length===0
     ? '<div class="ana-empty">No data yet</div>'
-    : compSorted.map(([name,count])=>`
+    : compSorted.map(([name,count]) => `
       <div class="ana-desig-chip">
         <div class="ana-desig-name">${name}</div>
         <div class="ana-desig-count">${count}</div>
         <div class="ana-desig-lbl">respondent${count!==1?'s':''}</div>
       </div>`).join('');
  
-  // respondents table
-  document.getElementById('ana-table-body').innerHTML = respondents.length===0
-    ? `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:32px">No responses yet</td></tr>`
-    : respondents.map((r,i)=>{
+  // ── SESSIONS LIST ──
+  const sessionsSorted = sessionList.sort((a,b) => new Date(b.created||0) - new Date(a.created||0));
+  document.getElementById('ana-sessions-list').innerHTML = sessionsSorted.length===0
+    ? '<div class="ana-empty">No sessions yet</div>'
+    : sessionsSorted.map(s => {
+      const date = s.created ? new Date(s.created).toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'}) : '—';
+      return `<div class="session-row">
+        <div class="session-row-name">${s.name}</div>
+        <div class="session-row-date">${date}</div>
+        <div style="text-align:right">
+          <div class="session-row-count">${s.responses}</div>
+          <div class="session-row-lbl">respondents</div>
+        </div>
+      </div>`;
+    }).join('');
+ 
+  // ── RESPONDENTS TABLE ──
+  document.getElementById('ana-table-body').innerHTML = allRespondents.length===0
+    ? `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:32px">No responses yet</td></tr>`
+    : allRespondents.map((r,i) => {
       const challenges=(r.challenges||[]).map(id=>{
         const p=PROBLEMS.find(x=>x.id===id);
         const col=COLORS[PROBLEMS.indexOf(p)%COLORS.length];
         return p?`<span class="ana-tag" style="background:${col.bg};color:${col.c}">${p.emoji} ${p.label}</span>`:'';
       }).join('');
-      const time=r.ts?new Date(r.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
+      const time = r.ts ? new Date(r.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '—';
       return `<tr>
         <td style="color:var(--text3)">${i+1}</td>
+        <td style="color:var(--text3);font-size:.72rem">${r.sessionName||'—'}</td>
         <td>${r.designation||'—'}</td>
         <td>${r.company||'—'}</td>
         <td>${challenges||'—'}</td>
