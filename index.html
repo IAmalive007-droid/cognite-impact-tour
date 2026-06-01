@@ -1093,23 +1093,7 @@ async function renderAnalytics(){
       </div>`;
     }).join('');
 
-  // Storage files section — show export CSV button instead
-  const storageEl = document.getElementById('ana-storage-files');
-  if(storageEl){
-    storageEl.innerHTML = sessionsSorted.map(s=>`
-      <div class="session-row">
-        <div class="session-row-name">${s.name}</div>
-        <div class="session-row-date">${s.created ? new Date(s.created).toLocaleDateString([],{day:'numeric',month:'short'}) : '—'}</div>
-        <div style="text-align:right">
-          <div class="session-row-count">${s.responses}</div>
-          <div class="session-row-lbl">respondents</div>
-        </div>
-      </div>`).join('') || '<div class="ana-empty">No sessions yet</div>';
-  }
-
   // Respondents table
-  // Debug: log respondents to console
-  console.log('All respondents:', allRespondents);
 
   document.getElementById('ana-table-body').innerHTML = allRespondents.length===0
     ? `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:32px">No responses yet</td></tr>`
