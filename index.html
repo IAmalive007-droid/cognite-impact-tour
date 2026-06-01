@@ -22,10 +22,10 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
 body{background:var(--bg);color:var(--text);font-family:var(--body);}
-
+ 
 .page{display:none;position:fixed;inset:0;z-index:1;overflow-y:auto;}
 .page.active{display:flex;flex-direction:column;}
-
+ 
 /* ── LOADING ── */
 #page-loading{align-items:center;justify-content:center;background:linear-gradient(to bottom,#14161f,#3d425c);flex-direction:column;gap:20px;}
 .loader-logo{width:72px;height:auto;opacity:0.9;filter:brightness(0) invert(1);animation:logoFade .5s ease both;}
@@ -34,7 +34,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .loader-bar{height:100%;width:0%;background:var(--lavender);border-radius:100px;animation:loadBar .9s cubic-bezier(.4,0,.2,1) forwards;}
 @keyframes loadBar{0%{width:0%}60%{width:75%}100%{width:100%}}
 .loader-text{font-family:var(--body);font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);animation:logoFade .5s .2s ease both;}
-
+ 
 /* ── LANDING ── */
 #page-landing{align-items:center;justify-content:center;text-align:center;padding:32px 24px;background:linear-gradient(to bottom,#14161f,#3d425c);overflow:hidden;}
 .location-btn{position:absolute;top:50px;right:48px;display:flex;align-items:center;gap:6px;font-family:var(--body);font-size:14px;font-weight:500;color:#fff;background:transparent;border:none;cursor:pointer;z-index:10;padding:4px 8px;border-radius:6px;transition:background .15s;}
@@ -45,19 +45,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .land-text{display:flex;flex-direction:column;gap:8px;width:100%;}
 .land-title{font-family:var(--heading);font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.25;color:#fafafa;letter-spacing:-.01em;}
 .land-sub{font-family:var(--body);font-size:18px;font-weight:400;line-height:1.78;color:#fff;opacity:.85;}
-
+ 
 /* Session name input on landing */
 .session-input-wrap{width:100%;display:flex;flex-direction:column;gap:8px;}
 .session-input-label{font-family:var(--body);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);text-align:left;}
 .session-input{width:100%;font-family:var(--body);font-size:15px;font-weight:500;color:#fafafa;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:8px;padding:12px 16px;outline:none;transition:border-color .18s;}
 .session-input::placeholder{color:rgba(255,255,255,.25);}
 .session-input:focus{border-color:rgba(204,212,255,.5);}
-
+ 
 .gen-btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--body);font-size:14px;font-weight:600;color:#1a1a1a;background:var(--lavender);border:1px solid var(--lavender);border-radius:4px;padding:12px 28px;cursor:pointer;transition:all .18s;width:100%;}
 .gen-btn:hover{background:#b8c3ff;border-color:#b8c3ff;transform:translateY(-1px);box-shadow:0 6px 24px rgba(204,212,255,.25);}
 .gen-btn:active{transform:scale(.98);}
 .gen-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
-
+ 
 /* ── QR PAGE ── */
 #page-qr{align-items:center;justify-content:center;text-align:center;padding:32px 24px;background:linear-gradient(to bottom,#14161f,#3d425c);}
 .qr-inner{position:relative;z-index:1;max-width:480px;width:100%;}
@@ -74,7 +74,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .qr-actions{display:flex;gap:10px;}
 .qr-dash-btn{flex:1;padding:14px;background:var(--lavender);color:#1a1a1a;border:none;border-radius:8px;font-family:var(--body);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .qr-dash-btn:hover{background:#b8c3ff;transform:translateY(-1px);}
-
+ 
 /* ── DASHBOARD ── */
 #page-dashboard{flex-direction:column;background:linear-gradient(170deg,#14161f 0%,#1e2140 100%);}
 .dash-nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:58px;border-bottom:1px solid var(--bord);background:rgba(20,22,31,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:10;flex-shrink:0;}
@@ -98,7 +98,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lavender),transparent);}
 .stat-num{font-family:var(--heading);font-size:3.5rem;font-weight:700;letter-spacing:-.05em;color:var(--lavender);line-height:1;margin-bottom:6px;}
 .stat-lbl{font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:var(--body);}
-
+ 
 /* ranked list */
 .ranked-card{background:rgba(255,255,255,.04);border:1px solid var(--bord);border-radius:14px;padding:12px 16px;flex:1;}
 .ranked-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text3);font-size:.82rem;font-family:var(--body);padding:48px 0;}
@@ -113,7 +113,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .rrow-label{font-family:var(--body);font-size:.9rem;font-weight:600;color:var(--text);flex:1;z-index:1;}
 .rrow-count{font-family:var(--heading);font-size:1.05rem;font-weight:700;color:var(--lavender);min-width:28px;text-align:right;flex-shrink:0;z-index:1;}
 .rrow-zero .rrow-label{color:var(--text3);font-weight:400;}.rrow-zero .rrow-count{color:var(--text3);}
-
+ 
 /* ── MODALS ── */
 .modal-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:24px;}
 .modal-overlay.show{display:flex;}
@@ -126,7 +126,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .modal-cancel:hover{color:var(--text);}
 .modal-confirm{flex:1;padding:11px;background:rgba(255,92,92,.15);color:var(--red);border:1px solid rgba(255,92,92,.3);border-radius:8px;font-family:var(--body);font-size:.84rem;font-weight:700;cursor:pointer;transition:all .15s;}
 .modal-confirm:hover{background:rgba(255,92,92,.25);}
-
+ 
 /* ── PRESENT MODE ── */
 #page-present{background:#0e1018;flex-direction:column;overflow:hidden;}
 .present-topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid rgba(255,255,255,.05);}
@@ -159,7 +159,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .pcard-rank.gold{background:rgba(255,200,69,.12);color:#ffc845;}
 .pcard-rank.silver{background:rgba(176,190,197,.1);color:#b0bec5;}
 .pcard-rank.bronze{background:rgba(205,140,82,.1);color:#cd8c52;}
-
+ 
 /* ── ANALYTICS PAGE ── */
 #page-analytics{flex-direction:column;background:linear-gradient(170deg,#14161f 0%,#1e2140 100%);}
 .ana-nav{display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:58px;border-bottom:1px solid var(--bord);background:rgba(20,22,31,.92);backdrop-filter:blur(16px);position:sticky;top:0;z-index:10;flex-shrink:0;}
@@ -170,18 +170,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .ana-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lavender);margin-bottom:8px;font-family:var(--body);opacity:.7;}
 .ana-title{font-family:var(--heading);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;letter-spacing:-.03em;color:#fafafa;margin-bottom:4px;}
 .ana-sub{font-size:.82rem;color:var(--text3);font-family:var(--body);}
-
+ 
 /* stat cards row */
 .ana-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 .ana-stat{background:rgba(255,255,255,.05);border:1px solid var(--bord);border-radius:10px;padding:18px 22px;position:relative;overflow:hidden;}
 .ana-stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lavender),transparent);}
 .ana-stat-num{font-family:var(--heading);font-size:2.4rem;font-weight:700;letter-spacing:-.05em;color:var(--lavender);line-height:1;margin-bottom:4px;}
 .ana-stat-lbl{font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:var(--body);}
-
+ 
 /* section card */
 .ana-card{background:rgba(255,255,255,.04);border:1px solid var(--bord);border-radius:14px;padding:24px 28px;}
 .ana-card-title{font-family:var(--heading);font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:18px;letter-spacing:-.01em;}
-
+ 
 /* challenge bars */
 .ana-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .ana-bar-row:last-child{margin-bottom:0;}
@@ -192,7 +192,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .ana-bar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .ana-bar-count{font-family:var(--heading);font-size:.88rem;font-weight:700;color:var(--lavender);min-width:24px;text-align:right;}
 .ana-bar-pct{font-size:.7rem;color:var(--text3);font-family:var(--body);min-width:32px;}
-
+ 
 /* respondents table */
 .ana-table-wrap{overflow-x:auto;}
 .ana-table{width:100%;border-collapse:collapse;}
@@ -201,7 +201,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .ana-table tr:last-child td{border-bottom:none;}
 .ana-table tr:hover td{background:rgba(255,255,255,.02);}
 .ana-tag{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:100px;margin:2px 2px 2px 0;white-space:nowrap;}
-
+ 
 /* designation breakdown */
 .ana-desig-grid{display:flex;flex-wrap:wrap;gap:10px;}
 .ana-desig-chip{background:rgba(255,255,255,.05);border:1px solid var(--bord);border-radius:8px;padding:10px 14px;min-width:140px;}
@@ -209,26 +209,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .ana-desig-count{font-family:var(--heading);font-size:1.4rem;font-weight:700;color:var(--lavender);letter-spacing:-.04em;}
 .ana-desig-lbl{font-size:.6rem;color:var(--text3);font-family:var(--body);}
 .ana-empty{color:var(--text3);font-size:.85rem;font-family:var(--body);padding:32px 0;text-align:center;}
-
+ 
 /* ── PARTICIPANT ── */
 #page-participant{background:linear-gradient(to bottom,#14161f,#3d425c);flex-direction:column;overflow:hidden;}
 .part-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .part-wrap{max-width:480px;width:100%;margin:0 auto;padding:36px 20px 24px;}
 .part-footer{flex-shrink:0;background:linear-gradient(to top,#14161f 70%,transparent);padding:16px 20px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));}
 .part-footer-inner{max-width:480px;margin:0 auto;}
-
+ 
 .part-chip{display:inline-flex;align-items:center;gap:7px;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--lavender);background:rgba(204,212,255,.1);border:1px solid rgba(204,212,255,.22);padding:5px 12px;border-radius:100px;margin-bottom:16px;font-family:var(--body);}
 .part-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--lavender);animation:blink 2s infinite;}
 .part-title{font-family:var(--heading);font-size:clamp(1.5rem,7vw,2.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:#fafafa;margin-bottom:8px;}
 .part-title .hl{color:var(--lavender);}
 .part-sub{font-size:.85rem;color:var(--text2);line-height:1.65;margin-bottom:20px;font-family:var(--body);}
-
+ 
 /* Step indicator */
 .step-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;}
 .step-pill{font-family:var(--body);font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:100px;background:rgba(255,255,255,.06);border:1px solid var(--bord);color:var(--text3);transition:all .2s;}
 .step-pill.active{background:rgba(204,212,255,.12);border-color:rgba(204,212,255,.3);color:var(--lavender);}
 .step-divider{flex:1;height:1px;background:var(--bord);}
-
+ 
 /* Info form — step 1 */
 #part-step1{}
 .field-wrap{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
@@ -239,7 +239,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .next-btn{width:100%;padding:14px;background:var(--lavender);color:#1a1a1a;border:none;border-radius:8px;font-family:var(--body);font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px;}
 .next-btn:hover:not(:disabled){background:#b8c3ff;transform:translateY(-1px);}
 .next-btn:disabled{opacity:.25;cursor:not-allowed;}
-
+ 
 /* challenge selection — step 2 */
 .rule{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.05);border:1px solid var(--bord);border-left:3px solid var(--lavender);border-radius:0 8px 8px 0;padding:10px 14px;font-size:.78rem;color:var(--text2);margin-bottom:18px;font-family:var(--body);}
 .rule strong{color:var(--text);font-weight:600;}
@@ -254,7 +254,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .pcard.sel .pchk{background:var(--lavender);border-color:var(--lavender);color:#1a1a1a;}
 .pemoji{font-size:1.1rem;flex-shrink:0;}
 .plabel{font-size:.87rem;font-weight:500;color:var(--text);line-height:1.35;flex:1;font-family:var(--body);}
-
+ 
 .crow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:.74rem;font-family:var(--body);}
 .cdots{display:flex;gap:5px;}
 .cdot{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--bord2);transition:all .18s;}
@@ -264,7 +264,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .sub-btn:disabled{opacity:.25;cursor:not-allowed;}
 .sub-error{display:none;margin-top:8px;padding:10px 14px;background:rgba(255,92,92,.08);border:1px solid rgba(255,92,92,.2);border-radius:8px;font-size:.78rem;color:var(--red);text-align:center;font-family:var(--body);}
 .sub-error.show{display:block;}
-
+ 
 .expired-view{text-align:center;padding:60px 20px;}
 .expired-icon{font-size:2.4rem;margin-bottom:16px;}
 .expired-title{font-family:var(--heading);font-size:1.3rem;font-weight:700;color:#fafafa;margin-bottom:8px;}
@@ -275,7 +275,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 @keyframes pop{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
 .done-title{font-family:var(--heading);font-size:1.4rem;font-weight:700;letter-spacing:-.02em;color:#fafafa;margin-bottom:8px;}
 .done-sub{font-size:.85rem;color:var(--text2);line-height:1.7;font-family:var(--body);}
-
+ 
 @media(max-width:600px){
   .dash-body{padding:18px 16px 32px;}
   .ana-body{padding:18px 16px 32px;}
@@ -284,12 +284,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
   .dash-nav{padding:0 16px;}
   .ana-nav{padding:0 16px;}
 }
-
+ 
   /* ── ANALYTICS EXTRAS ── */
   .ana-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
   .ana-tab { font-family:var(--body); font-size:.72rem; font-weight:600; padding:6px 14px; border-radius:100px; border:1px solid var(--bord); background:transparent; color:var(--text3); cursor:pointer; transition:all .15s; }
   .ana-tab.active { background:rgba(204,212,255,.12); border-color:rgba(204,212,255,.3); color:var(--lavender); }
-
+ 
   /* insight cards */
   .insight-grid { display:flex; flex-direction:column; gap:10px; }
   .insight-card {
@@ -303,7 +303,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
   .insight-text { font-family:var(--body); font-size:.88rem; color:var(--text2); line-height:1.6; }
   .insight-text strong { color:var(--text); font-weight:600; }
   .insight-source { font-family:var(--body); font-size:.65rem; color:var(--text3); margin-top:6px; letter-spacing:.04em; }
-
+ 
   /* session list */
   .session-list { display:flex; flex-direction:column; gap:8px; }
   .session-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:rgba(255,255,255,.04); border:1px solid var(--bord); border-radius:10px; }
@@ -314,14 +314,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 </style>
 </head>
 <body>
-
+ 
 <!-- LOADING -->
 <div class="page" id="page-loading">
   <img class="loader-logo" src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite"/>
   <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
   <div class="loader-text" id="loader-text">Loading…</div>
 </div>
-
+ 
 <!-- LANDING -->
 <div class="page active" id="page-landing">
   <button class="location-btn" onclick="alert('Location selector coming soon')">
@@ -343,7 +343,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     <button class="gen-btn" id="gen-btn" onclick="generateQR()" disabled>Generate QR →</button>
   </div>
 </div>
-
+ 
 <!-- QR PAGE -->
 <div class="page" id="page-qr">
   <div class="qr-inner">
@@ -358,7 +358,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <!-- DASHBOARD -->
 <div class="page" id="page-dashboard">
   <nav class="dash-nav">
@@ -401,7 +401,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <!-- PRESENT MODE -->
 <div class="page" id="page-present">
   <div class="present-topbar">
@@ -425,7 +425,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <!-- ANALYTICS -->
 <div class="page" id="page-analytics">
   <nav class="ana-nav">
@@ -444,7 +444,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
       <div class="ana-title">All Sessions Overview</div>
       <div class="ana-sub" id="ana-sub">Loading all session data…</div>
     </div>
-
+ 
     <!-- stat cards -->
     <div class="ana-stats">
       <div class="ana-stat">
@@ -460,7 +460,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
         <div class="ana-stat-lbl">Companies</div>
       </div>
     </div>
-
+ 
     <!-- key insights -->
     <div class="ana-card">
       <div class="ana-card-title">Key Insights</div>
@@ -468,42 +468,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
         <div class="ana-empty">Loading insights…</div>
       </div>
     </div>
-
+ 
     <!-- challenge breakdown -->
     <div class="ana-card">
       <div class="ana-card-title">Challenge Breakdown — All Sessions</div>
       <div id="ana-bars"></div>
     </div>
-
+ 
     <!-- designation breakdown -->
     <div class="ana-card">
       <div class="ana-card-title">By Designation</div>
       <div class="ana-desig-grid" id="ana-desig"></div>
     </div>
-
+ 
     <!-- company breakdown -->
     <div class="ana-card">
       <div class="ana-card-title">By Company</div>
       <div class="ana-desig-grid" id="ana-companies-grid"></div>
     </div>
-
-    <!-- sessions list -->
-    <div class="ana-card">
-      <div class="ana-card-title">Sessions</div>
-      <div class="session-list" id="ana-sessions-list">
-        <div class="ana-empty">Loading sessions…</div>
-      </div>
-    </div>
-
-    <!-- storage files -->
-    <div class="ana-card">
-      <div class="ana-card-title" style="display:flex;align-items:center;justify-content:space-between">
-        <span>Session JSON Files</span>
-        <span style="font-size:.7rem;color:var(--text3);font-weight:400">Firebase Storage</span>
-      </div>
-      <div id="ana-storage-files"><div class="ana-empty">Loading files…</div></div>
-    </div>
-
+ 
+ 
+ 
     <!-- respondents table -->
     <div class="ana-card">
       <div class="ana-card-title">All Respondents</div>
@@ -525,12 +510,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <!-- PARTICIPANT -->
 <div class="page" id="page-participant">
   <div class="part-scroll">
     <div class="part-wrap">
-
+ 
       <!-- STEP 1: Info -->
       <div id="part-step1">
         <div class="part-chip">Mumbai Impact Tour · 2026</div>
@@ -551,7 +536,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
         </div>
         <button class="next-btn" id="next-btn" disabled onclick="goToStep2()">Next →</button>
       </div>
-
+ 
       <!-- STEP 2: Challenges -->
       <div id="part-step2" style="display:none">
         <div class="part-chip">Mumbai Impact Tour · 2026</div>
@@ -565,22 +550,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
         <div class="rule"><span>📌</span><span>Choose up to <strong>3 challenges</strong> that resonate most</span></div>
         <div class="plist" id="plist"></div>
       </div>
-
+ 
       <div class="expired-view" id="expired-view" style="display:none">
         <div class="expired-icon">⏱️</div>
         <div class="expired-title">Session not found</div>
         <p class="expired-sub">This session may have ended.<br>Ask the presenter for a new QR code.</p>
       </div>
-
+ 
       <div class="done-view" id="done-view">
         <div class="done-icon">✓</div>
         <div class="done-title">Response submitted!</div>
         <p class="done-sub">Your challenges are now live on the display screen.<br>See what the room is thinking.</p>
       </div>
-
+ 
     </div>
   </div>
-
+ 
   <!-- fixed footer — step 2 only -->
   <div class="part-footer" id="part-footer" style="display:none">
     <div class="part-footer-inner">
@@ -597,7 +582,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <!-- RESET MODAL -->
 <div class="modal-overlay" id="reset-modal">
   <div class="modal-box">
@@ -610,7 +595,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
     </div>
   </div>
 </div>
-
+ 
 <script>
 const PROBLEMS = [
   {id:'data-silos',  label:'Data locked in silos across systems',    emoji:'🔒'},
@@ -622,7 +607,7 @@ const PROBLEMS = [
   {id:'compliance',  label:'Regulatory & compliance pressure',        emoji:'📋'},
   {id:'cost',        label:'Reducing operational costs at scale',     emoji:'💸'},
 ];
-
+ 
 const COLORS=[
   {bg:'rgba(204,212,255,.12)',c:'#ccd4ff'},{bg:'rgba(255,107,43,.12)',c:'#ff8c5a'},
   {bg:'rgba(39,196,134,.10)',c:'#27c486'},{bg:'rgba(180,100,255,.10)',c:'#c47aff'},
@@ -630,10 +615,10 @@ const COLORS=[
   {bg:'rgba(255,80,130,.10)',c:'#ff6090'},{bg:'rgba(130,255,180,.08)',c:'#7affa8'},
 ];
 const BAR_COLORS=['#ccd4ff','#ff8c5a','#27c486','#c47aff','#ffc845','#00c8dc','#ff6090','#7affa8'];
-
+ 
 let db=null, storage=null, sessionId=null, sessionName=null, listener=null;
 let selected=new Set(), lastVotes={}, lastResponses=0, lastRespondents=[];
-
+ 
 // ── UTILS ──
 function animateCount(el,to){
   if(!el)return;
@@ -643,23 +628,23 @@ function animateCount(el,to){
   let cur=from,i=0;
   const t=setInterval(()=>{i++;cur+=inc;el.textContent=Math.round(i<steps?cur:to);if(i>=steps)clearInterval(t);},22);
 }
-
+ 
 function slugify(str){
   return str.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
-
+ 
 // ── LANDING ──
 function onSessionNameInput(){
   const val = document.getElementById('session-name-input').value.trim();
   document.getElementById('gen-btn').disabled = val.length < 2;
 }
-
+ 
 // ── PAGE ROUTING — defined first so nothing can call it before it exists ──
 function goToPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
+ 
 // ── FIREBASE INIT ──
 function initFirebase() {
   try {
@@ -675,7 +660,7 @@ function initFirebase() {
     return true;
   } catch(e) { console.error('Firebase init failed:', e); return false; }
 }
-
+ 
 // ── SAVE SESSION JSON TO STORAGE ──
 async function saveSessionJSON(sid, sname, data) {
   if (!storage) return;
@@ -706,7 +691,7 @@ async function saveSessionJSON(sid, sname, data) {
         submittedAt: v.ts ? new Date(v.ts).toISOString() : null,
       })),
     };
-
+ 
     const json = JSON.stringify(payload, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const ref = storage.ref('sessions/' + sid + '.json');
@@ -716,10 +701,10 @@ async function saveSessionJSON(sid, sname, data) {
     console.warn('Could not save session JSON to Storage:', e);
   }
 }
-
+ 
 window.addEventListener('load', async () => {
   const sid = new URLSearchParams(window.location.search).get('s');
-
+ 
   // ── NO ?s= → PRESENTER LANDING ──
   // Landing page is already active by default (no JS needed to show it)
   if (!sid) {
@@ -747,19 +732,19 @@ window.addEventListener('load', async () => {
     }
     return; // landing already visible, nothing else to do
   }
-
+ 
   // ── ?s= PRESENT → PARTICIPANT ──
   // Switch to loading screen while we connect
   goToPage('page-loading');
   const loaderText = document.getElementById('loader-text');
   if(loaderText) loaderText.textContent = 'Connecting to session…';
   sessionId = sid;
-
+ 
   if (!initFirebase()) {
     if(loaderText) loaderText.textContent = 'Connection failed. Please refresh.';
     return;
   }
-
+ 
   // Already voted?
   if (localStorage.getItem('voted_'+sid)) {
     goToPage('page-participant');
@@ -769,7 +754,7 @@ window.addEventListener('load', async () => {
     document.getElementById('done-view').classList.add('show');
     return;
   }
-
+ 
   // Verify session in Firebase
   try {
     const snap = await db.ref('sessions/'+sid+'/meta').once('value');
@@ -784,10 +769,10 @@ window.addEventListener('load', async () => {
     if(loaderText) loaderText.textContent = 'Could not verify session. Try refreshing.';
     return;
   }
-
+ 
   goToPage('page-participant');
 });
-
+ 
 function updateSessionNameUI(name){
   ['dash-session-name','ana-session-name','ana-title'].forEach(id=>{
     const el=document.getElementById(id);
@@ -798,7 +783,7 @@ function updateSessionNameUI(name){
   const pres=document.getElementById('pres-session-name');
   if(pres)pres.textContent=name+' · 2026';
 }
-
+ 
 // ── GENERATE QR ──
 function generateQR(){
   const name = document.getElementById('session-name-input').value.trim();
@@ -808,7 +793,7 @@ function generateQR(){
   const ts=`${now.getFullYear()}${p(now.getMonth()+1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}${p(now.getSeconds())}`;
   sessionId = slugify(name)+'-'+ts;
   sessionName = name;
-
+ 
   if(db) db.ref('sessions/'+sessionId+'/meta').set({
     name: name,
     created: new Date().toISOString(),
@@ -817,26 +802,26 @@ function generateQR(){
     // Save initial empty JSON to Storage
     saveSessionJSON(sessionId, name, { meta: { name, created: new Date().toISOString(), responses: 0 }, votes: {}, submissions: {} });
   });
-
+ 
   localStorage.setItem('presenterSession', sessionId);
   localStorage.setItem('presenterSessionName', name);
-
+ 
   const url = window.location.href.split('?')[0]+'?s='+sessionId;
   document.getElementById('qr-url').textContent = url;
   document.getElementById('qr-session-name').textContent = name;
   document.getElementById('qr-sid').textContent = sessionId;
   updateSessionNameUI(name);
-
+ 
   const canvas=document.getElementById('qr-canvas');
   canvas.innerHTML='';
   new QRCode(canvas,{text:url,width:220,height:220,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
-
+ 
   goToPage('page-qr');
   startListening(sessionId);
 }
-
+ 
 function goToDash(){ goToPage('page-dashboard'); }
-
+ 
 function onNewSession(){
   if(lastResponses>0){
     if(!confirm(`This session has ${lastResponses} response(s). Start a new session anyway?`))return;
@@ -845,7 +830,7 @@ function onNewSession(){
   document.getElementById('gen-btn').disabled=true;
   goToPage('page-landing');
 }
-
+ 
 // ── FIREBASE LISTENER ──
 let _saveTimer = null;
 function startListening(sid){
@@ -873,7 +858,7 @@ function startListening(sid){
   });
   listener=()=>ref.off('value',fn);
 }
-
+ 
 // ── DASHBOARD ──
 function renderDash(votes,responses){
   animateCount(document.getElementById('stat-resp'),responses);
@@ -899,7 +884,7 @@ function renderDash(votes,responses){
     </div>`;
   }).join('');
 }
-
+ 
 // ── PRESENT ──
 function enterPresent(){goToPage('page-present');renderPresent(lastVotes,lastResponses);}
 function renderPresent(votes,responses){
@@ -929,7 +914,7 @@ function renderPresent(votes,responses){
     </div>`;
   }).join('');
 }
-
+ 
 // ── ANALYTICS ──
 async function goToAnalytics(){
   goToPage('page-analytics');
@@ -939,13 +924,13 @@ async function goToAnalytics(){
   if (!db) initFirebase();
   await renderAnalytics();
 }
-
+ 
 async function renderAnalytics(){
   if(!db) initFirebase();
   if(!db){ document.getElementById('ana-sub').textContent='Database not available.'; return; }
-
+ 
   document.getElementById('ana-sub').textContent = 'Loading all session data…';
-
+ 
   // Pull everything from Realtime Database
   let allSessions = {};
   try {
@@ -955,7 +940,7 @@ async function renderAnalytics(){
     document.getElementById('ana-sub').textContent = 'Could not load data. Check your connection.';
     return;
   }
-
+ 
   // Aggregate across all sessions
   const sessionList = [];
   const allRespondents = [];
@@ -964,7 +949,7 @@ async function renderAnalytics(){
   const compMap = {};
   const desigChallengeMap = {};
   PROBLEMS.forEach(p => globalVotes[p.id] = 0);
-
+ 
   Object.entries(allSessions).forEach(([sid, sdata]) => {
     if(!sdata?.meta) return;
     const name = sdata.meta.name || sid;
@@ -972,11 +957,11 @@ async function renderAnalytics(){
     const created = sdata.meta.created || null;
     const votes = sdata.votes || {};
     const submissions = sdata.submissions || {};
-
+ 
     Object.entries(votes).forEach(([cid, cnt]) => {
       if(globalVotes[cid] !== undefined) globalVotes[cid] += cnt;
     });
-
+ 
     Object.entries(submissions).forEach(([key, r]) => {
       allRespondents.push({...r, sessionName: name, sessionId: sid});
       const desig = r.designation || '';
@@ -991,24 +976,24 @@ async function renderAnalytics(){
       }
       if(comp) compMap[comp] = (compMap[comp]||0) + 1;
     });
-
+ 
     sessionList.push({ sid, name, responses, created });
   });
-
+ 
   allRespondents.sort((a,b) => (a.ts||0) - (b.ts||0));
-
+ 
   const totalRespondents = allRespondents.length;
   const totalSessions = sessionList.length;
   const totalCompanies = Object.keys(compMap).length;
   const totalVotes = Object.values(globalVotes).reduce((a,b)=>a+b,0);
-
+ 
   // Stat cards
   animateCount(document.getElementById('ana-total-resp'), totalRespondents);
   animateCount(document.getElementById('ana-total-sessions'), totalSessions);
   animateCount(document.getElementById('ana-companies'), totalCompanies);
   document.getElementById('ana-sub').textContent =
     `${totalRespondents} respondents · ${totalSessions} session${totalSessions!==1?'s':''} · ${totalCompanies} companies`;
-
+ 
   // Key Insights
   const sortedChallenges = PROBLEMS.map(p=>({...p,count:globalVotes[p.id]||0})).sort((a,b)=>b.count-a.count);
   const topChallenge = sortedChallenges[0];
@@ -1016,7 +1001,7 @@ async function renderAnalytics(){
   const topDesig = sortedDesig[0];
   const sortedComp = Object.entries(compMap).sort((a,b)=>b[1]-a[1]);
   const insights = [];
-
+ 
   if(topChallenge?.count > 0){
     const pct = Math.round(topChallenge.count/(totalVotes||1)*100);
     insights.push({ icon:topChallenge.emoji, stat:`${pct}%`,
@@ -1053,7 +1038,7 @@ async function renderAnalytics(){
         text:`of <strong>${ins.desig}s</strong> flagged <strong>"${ins.prob.label}"</strong> as a key challenge`,
         source:`${ins.count} out of ${ins.total} ${ins.desig}s` });
     });
-
+ 
   document.getElementById('ana-insights').innerHTML = insights.length===0
     ? '<div class="ana-empty">Not enough data for insights yet</div>'
     : insights.map(ins=>`
@@ -1065,7 +1050,7 @@ async function renderAnalytics(){
           <div class="insight-source">${ins.source}</div>
         </div>
       </div>`).join('');
-
+ 
   // Challenge bars
   const maxV = sortedChallenges[0]?.count||1;
   document.getElementById('ana-bars').innerHTML = !sortedChallenges.some(p=>p.count>0)
@@ -1080,7 +1065,7 @@ async function renderAnalytics(){
         <div class="ana-bar-right"><span class="ana-bar-count">${p.count}</span><span class="ana-bar-pct">${pct}%</span></div>
       </div>`;
     }).join('');
-
+ 
   // Designation chips
   document.getElementById('ana-desig').innerHTML = sortedDesig.length===0
     ? '<div class="ana-empty">No data yet</div>'
@@ -1093,7 +1078,7 @@ async function renderAnalytics(){
         <div class="ana-desig-lbl">respondent${count!==1?'s':''}${prob?' · '+prob.emoji:''}</div>
       </div>`;
     }).join('');
-
+ 
   // Company chips
   document.getElementById('ana-companies-grid').innerHTML = sortedComp.length===0
     ? '<div class="ana-empty">No data yet</div>'
@@ -1103,7 +1088,7 @@ async function renderAnalytics(){
         <div class="ana-desig-count">${count}</div>
         <div class="ana-desig-lbl">respondent${count!==1?'s':''}</div>
       </div>`).join('');
-
+ 
   // Sessions list
   const sessionsSorted = sessionList.sort((a,b)=>new Date(b.created||0)-new Date(a.created||0));
   document.getElementById('ana-sessions-list').innerHTML = sessionsSorted.length===0
@@ -1119,7 +1104,7 @@ async function renderAnalytics(){
         </div>
       </div>`;
     }).join('');
-
+ 
   // Storage files section — show export CSV button instead
   const storageEl = document.getElementById('ana-storage-files');
   if(storageEl){
@@ -1133,7 +1118,7 @@ async function renderAnalytics(){
         </div>
       </div>`).join('') || '<div class="ana-empty">No sessions yet</div>';
   }
-
+ 
   // Respondents table
   document.getElementById('ana-table-body').innerHTML = allRespondents.length===0
     ? `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:32px">No responses yet</td></tr>`
@@ -1155,8 +1140,8 @@ async function renderAnalytics(){
       </tr>`;
     }).join('');
 }
-
-
+ 
+ 
 // ── RESET ──
 function confirmReset(){document.getElementById('reset-modal').classList.add('show');}
 function closeResetModal(){document.getElementById('reset-modal').classList.remove('show');}
@@ -1167,7 +1152,7 @@ function doReset(){
   db.ref('sessions/'+sessionId+'/submissions').remove();
   db.ref('sessions/'+sessionId+'/meta/responses').set(0);
 }
-
+ 
 // ── EXPORT ──
 function exportCSV(){
   const rows=[['Session',sessionName||sessionId],['',''],
@@ -1191,7 +1176,7 @@ function exportCSV(){
   a.download=`impact-tour-${sessionName||sessionId||'results'}.csv`;
   a.click();
 }
-
+ 
 // ── PARTICIPANT STEP 1 ──
 function checkStep1(){
   const d=document.getElementById('f-designation').value.trim();
@@ -1204,7 +1189,7 @@ function goToStep2(){
   document.getElementById('part-footer').style.display='block';
   renderProblems();
 }
-
+ 
 // ── PARTICIPANT CHALLENGES ──
 function renderProblems(){
   document.getElementById('plist').innerHTML=PROBLEMS.map(p=>`
@@ -1214,7 +1199,7 @@ function renderProblems(){
       <span class="plabel">${p.label}</span>
     </div>`).join('');
 }
-
+ 
 function toggle(id){
   if(selected.has(id)){selected.delete(id);document.getElementById('pc-'+id).classList.remove('sel');}
   else{if(selected.size>=3)return;selected.add(id);document.getElementById('pc-'+id).classList.add('sel');}
@@ -1231,7 +1216,7 @@ function toggle(id){
   t.style.color=selected.size>0?'var(--lavender)':'var(--text3)';
   document.getElementById('sub-btn').disabled=selected.size===0;
 }
-
+ 
 async function submitVote(){
   if(!sessionId||!db)return;
   const btn=document.getElementById('sub-btn');
@@ -1262,7 +1247,8 @@ async function submitVote(){
     errEl.classList.add('show');
   }
 }
-
+ 
 </script>
 </body>
 </html>
+ 
