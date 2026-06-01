@@ -210,7 +210,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 .ana-empty{color:var(--text3);font-size:.85rem;font-family:var(--body);padding:32px 0;text-align:center;}
  
 /* ── PARTICIPANT ── */
-#page-participant{background:linear-gradient(to bottom,#14161f,#3d425c);display:flex;flex-direction:column;overflow:hidden;}
+#page-participant{background:linear-gradient(to bottom,#14161f,#3d425c);flex-direction:column;overflow:hidden;}
 .part-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .part-wrap{max-width:480px;width:100%;margin:0 auto;padding:36px 20px 24px;}
 .part-footer{flex-shrink:0;background:linear-gradient(to top,#14161f 70%,transparent);padding:16px 20px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));}
@@ -288,14 +288,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--body);}
 <body>
  
 <!-- LOADING -->
-<div class="page active" id="page-loading">
+<div class="page" id="page-loading">
   <img class="loader-logo" src="https://www.figma.com/api/mcp/asset/f3a471cc-a96c-4da1-ad16-fe1752dfb92a" alt="Cognite"/>
   <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
   <div class="loader-text" id="loader-text">Loading…</div>
 </div>
  
 <!-- LANDING -->
-<div class="page" id="page-landing">
+<div class="page active" id="page-landing">
   <button class="location-btn" onclick="alert('Location selector coming soon')">
     Mumbai
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -595,25 +595,37 @@ function onSessionNameInput(){
   document.getElementById('gen-btn').disabled = val.length < 2;
 }
  
+// ── PAGE ROUTING — defined first so nothing can call it before it exists ──
+function goToPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+ 
 // ── FIREBASE INIT ──
+function initFirebase() {
+  try {
+    const app = firebase.apps.length ? firebase.app() : firebase.initializeApp({
+      apiKey:'AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k',
+      authDomain:'cognite-impact-tour.firebaseapp.com',
+      databaseURL:'https://cognite-impact-tour-default-rtdb.firebaseio.com',
+      projectId:'cognite-impact-tour',
+    });
+    db = firebase.database(app);
+    return true;
+  } catch(e) { console.error('Firebase init failed:', e); return false; }
+}
+ 
 window.addEventListener('load', async () => {
   const sid = new URLSearchParams(window.location.search).get('s');
  
+  // ── NO ?s= → PRESENTER LANDING ──
+  // Landing page is already active by default (no JS needed to show it)
   if (!sid) {
-    try {
-      const app = firebase.initializeApp({
-        apiKey:'AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k',
-        authDomain:'cognite-impact-tour.firebaseapp.com',
-        databaseURL:'https://cognite-impact-tour-default-rtdb.firebaseio.com',
-        projectId:'cognite-impact-tour',
-      });
-      db = firebase.database(app);
-    } catch(e){ console.error(e); }
- 
-    // restore saved session
+    initFirebase();
+    // Silently restore last session in background
     const saved = localStorage.getItem('presenterSession');
     const savedName = localStorage.getItem('presenterSessionName');
-    if (saved) {
+    if (saved && db) {
       sessionId = saved;
       sessionName = savedName || saved;
       updateSessionNameUI(sessionName);
@@ -626,24 +638,23 @@ window.addEventListener('load', async () => {
       new QRCode(canvas,{text:url,width:220,height:220,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
       startListening(saved);
     }
-    goToPage('page-landing');
+    return; // landing already visible, nothing else to do
+  }
+ 
+  // ── ?s= PRESENT → PARTICIPANT ──
+  // Switch to loading screen while we connect
+  goToPage('page-loading');
+  const loaderText = document.getElementById('loader-text');
+  if(loaderText) loaderText.textContent = 'Connecting to session…';
+  sessionId = sid;
+ 
+  if (!initFirebase()) {
+    if(loaderText) loaderText.textContent = 'Connection failed. Please refresh.';
     return;
   }
  
-  // Participant
-  sessionId = sid;
-  const loaderText = document.getElementById('loader-text');
-  try {
-    const app = firebase.initializeApp({
-      apiKey:'AIzaSyAJdvsbeSCLBT-sJ1rGcR9tZlFR-3j7T0k',
-      authDomain:'cognite-impact-tour.firebaseapp.com',
-      databaseURL:'https://cognite-impact-tour-default-rtdb.firebaseio.com',
-      projectId:'cognite-impact-tour',
-    });
-    db = firebase.database(app);
-  } catch(e){ if(loaderText)loaderText.textContent='Connection failed. Please refresh.'; return; }
- 
-  if(localStorage.getItem('voted_'+sid)){
+  // Already voted?
+  if (localStorage.getItem('voted_'+sid)) {
     goToPage('page-participant');
     document.getElementById('part-step1').style.display='none';
     document.getElementById('part-step2').style.display='none';
@@ -652,25 +663,23 @@ window.addEventListener('load', async () => {
     return;
   }
  
+  // Verify session in Firebase
   try {
-    if(loaderText)loaderText.textContent='Connecting to session…';
     const snap = await db.ref('sessions/'+sid+'/meta').once('value');
-    if(!snap.exists()){
+    if (!snap.exists()) {
       goToPage('page-participant');
       document.getElementById('part-step1').style.display='none';
       document.getElementById('expired-view').style.display='block';
       return;
     }
     sessionName = snap.val().name || sid;
-  } catch(e){ if(loaderText)loaderText.textContent='Could not verify session. Try refreshing.'; return; }
+  } catch(e) {
+    if(loaderText) loaderText.textContent = 'Could not verify session. Try refreshing.';
+    return;
+  }
  
   goToPage('page-participant');
 });
- 
-function goToPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
  
 function updateSessionNameUI(name){
   ['dash-session-name','ana-session-name','ana-title'].forEach(id=>{
